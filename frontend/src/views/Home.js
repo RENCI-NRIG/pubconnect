@@ -9,7 +9,8 @@ import { Button, Card, CardContent, Checkbox, Typography, makeStyles } from '@ma
 
 const useStyles = makeStyles((theme) => ({
     card: {
-        margin: theme.spacing(2)
+        margin: theme.spacing(2),
+        backgroundColor: '#d9d9d9'
     },
     link_button: {
         margin: theme.spacing(2),

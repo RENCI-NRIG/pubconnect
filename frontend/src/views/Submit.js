@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
 import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles } from '@material-ui/core';
+import '../App.css';
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        margin: theme.spacing(2),
+        marginTop: 10,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    btn: {
+        marginTop: 20
+    },
+    card: {
+        backgroundColor: '#00758d',
+        color: 'white'
     }
 }))
 
@@ -13,18 +23,22 @@ function Submit(props) {
     const classes = useStyles();
     const userIDs = props.location.ids;
     return (
-        <Container className={classes.container}>
-            <Card><CardContent>Thank you so much for taking the time to complete this survey! </CardContent></Card>
-
-        <p>Prize</p>
-        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-
-        <Button variant="outlined" color="secondary">Submit</Button>
-        <br />
-        <Typography>We found {userIDs.length} names for you in Microsoft Academic. Here are links to those pages:</Typography>
-            {userIDs.map(id => <Typography>ID: {id}</Typography>)}
-        <br/>
-        <span><Typography>If you would like to merge your X Microsoft Academic IDs into one…</Typography></span></Container>
+        <div className={classes.container}>
+            <Card className={classes.card}><CardContent>Thank you so much for taking the time to complete this survey!
+        <hr />
+                <p>Prize:</p>
+                <p>Participation Prize | Sticker (Chameleon, FABRIC, CloudLab?) | First 175 to complete the survey
+                Postage</p>
+                <p>Second Prize | $25 Amazon Gift Card | 6 Recipients selected by Gleam.io at random</p>
+                <p>First Prize | $50 Amazon Gift Card | 3 Recipients selected by Gleam.io at random</p>
+                <p>Grand Prize | FABRIC Beta Tester or Travel | 10 Recipients selected by Gleam.io at random</p>
+            </CardContent></Card>
+            <Button className={classes.btn} variant="outlined" color="secondary" size="large">Submit</Button>
+            <br />
+            <Typography>We found {userIDs.length} names for you in Microsoft Academic. Here are links to those pages:</Typography>
+            { userIDs.map(id => <Typography>ID: {id}</Typography>)}
+            <br />
+            <span><Typography>If you would like to merge your X Microsoft Academic IDs into one…</Typography></span></div >
     )
 }
 
