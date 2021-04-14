@@ -46,12 +46,12 @@ function Home(props) {
     useEffect(async () => {
         let tem = [];
         for await (let i of userInfo) {
-            console.log(i)
+            let lowerCaseName = i.toLowerCase();
             axios({
                 method: 'GET',
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                 params: {
-                    expr: `Composite(AA.AuN=='${i}')`,
+                    expr: `Composite(AA.AuN=='${lowerCaseName}')`,
                     attributes: 'AA.AuId,AA.AuN',
                     'subscription-key': 'f6714001211242e982d92a3646ececed',
                     count: 100
@@ -60,7 +60,7 @@ function Home(props) {
                 let ids = new Set();
                 for (let article in res.data.entities) {
                     for (let author in res.data.entities[article].AA) {
-                        if (res.data.entities[article].AA[author].AuN == i) {
+                        if (res.data.entities[article].AA[author].AuN == lowerCaseName) {
                             ids.add(res.data.entities[article].AA[author].AuId);
                         }
                     }

@@ -68,7 +68,6 @@ function Login() {
                                 let newArray = usernames.slice();
                                 newArray[index] = e.target.value;
                                 setUserNames(newArray);
-                                console.log(newArray)
                             }}></TextField>{index === 0 ? <span /> : <ToggleButton size="small" onClick={() => removeNameField(index)}><ClearIcon /></ToggleButton>}</div>)}
                         <br />
                         <div><ToggleButton size="small" className="toggle_addName" onClick={addNameField}><AddIcon /></ToggleButton> Add another name you have published under</div>
