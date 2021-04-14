@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@reach/router';
 import '../App.css';
+import PubConnectLarge from '../PC-large.png'
 
 import { Button, Heading, TextField, Typography } from '@material-ui/core';
 import { Card, CardContent } from '@material-ui/core';
@@ -16,12 +17,13 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         backgroundColor: '#00758d',
-        color: 'white'
+        color: 'white',
+        fontSize: 16
     }
 }))
 
 function Login() {
-    const [usernames, setUserNames] = useState([""]);
+    const [usernames, setUserNames] = useState(sessionStorage.getItem('login') === null ? ["", ""] : JSON.parse(sessionStorage.getItem('login')));
     const [namesCounter, setNamesCounter] = useState([0]);
     const [email, setEmail] = useState();
     const classes = useStyles();
@@ -35,13 +37,12 @@ function Login() {
         let removedArray = usernames.slice();
         removedArray.splice(index, 1);
         setUserNames(removedArray);
-        console.log(removedArray);
     }
 
     return (
         <div className="login_body">
             <div className="login_wrap">
-                <Typography className="login_logo" variant="h4"><b>PubConnect</b></Typography>
+                <div className="logoBar"><a><img className="login_logo" src={PubConnectLarge}></img></a></div>
                 <div className="form">
                     <Card className={classes.card}>
                         <CardContent>
@@ -59,7 +60,7 @@ function Login() {
                         </CardContent>
                     </Card>
                     <p><b>Getting Started</b> -
-                Please first enter your email address,* and first and last name in the fields below. If you have published under more than one name, please click the + button to add those other names.</p>
+                Please first enter your email address,* and full name in the fields below. If you have published under more than one name, please click the + button to add those other names.</p>
                     <div id="username_group">
                         <div className="login_namefield"><TextField variant="outlined" className={classes.input} label="Email" fullWidth="true" placeholder="john.doe@gmail.com" onChange={(e) => { setEmail(e.target.value) }}></TextField></div>
                         {usernames.map((username, index) =>
@@ -72,7 +73,7 @@ function Login() {
                         <br />
                         <div><ToggleButton size="small" className="toggle_addName" onClick={addNameField}><AddIcon /></ToggleButton> Add another name you have published under</div>
                         <br />
-                        <Link className="login_button" to={{ pathname: "/home", userInfo: [usernames, email] }} > <Button fullWidth="true" variant="outlined" size="large" color="primary">Start Survey</Button></Link>
+                        <Link className="login_button" to="/home" state={{ userInfo: [usernames, email] }} > <Button fullWidth="true" variant="outlined" size="large" color="primary">Start Survey</Button></Link>
                     </div>
                 </div >
             </div>

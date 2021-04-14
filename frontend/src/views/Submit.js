@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles } from '@material-ui/core';
 import '../App.css';
+import PubConnectSmall from '../PC-small.png';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -21,9 +23,22 @@ const useStyles = makeStyles((theme) => ({
 
 function Submit(props) {
     const classes = useStyles();
-    const userIDs = props.location.ids;
+    const userIDs = JSON.parse(sessionStorage.getItem('home'));
+    const handleDataSubmit = () => {
+        axios({
+            url: 'http://localhost:5000/insert',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(props.location)
+        }).then(res => console.log(res))
+            .catch(e => console.log(e))
+    }
+
     return (
         <div className={classes.container}>
+            <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
             <Card className={classes.card}><CardContent>Thank you so much for taking the time to complete this survey!
         <hr />
                 <p>Prize:</p>
@@ -33,12 +48,11 @@ function Submit(props) {
                 <p>First Prize | $50 Amazon Gift Card | 3 Recipients selected by Gleam.io at random</p>
                 <p>Grand Prize | FABRIC Beta Tester or Travel | 10 Recipients selected by Gleam.io at random</p>
             </CardContent></Card>
-            <Button className={classes.btn} variant="outlined" color="secondary" size="large">Submit</Button>
             <br />
-            <Typography>We found {userIDs.length} names for you in Microsoft Academic. Here are links to those pages:</Typography>
+            <Typography>We found {userIDs.length} names for you in Microsoft Academic.</Typography>
             { userIDs.map(id => <Typography>ID: {id}</Typography>)}
             <br />
-            <span><Typography>If you would like to merge your X Microsoft Academic IDs into one…</Typography></span></div >
+        </div>
     )
 }
 

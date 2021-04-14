@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from '@reach/router';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles } from '@material-ui/core';
+import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles, FormHelperText } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import Tooltip from '@material-ui/core/Tooltip';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import PubConnectSmall from '../PC-small.png';
+import '../App.css';
+
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        margin: theme.spacing(2)
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20
     },
     yearTag: {
         display: 'flex',
@@ -21,13 +29,17 @@ const useStyles = makeStyles((theme) => ({
     buttonContainer: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        paddingTop: 15,
+        paddingBottom: 15,
+        width: '80vw'
     },
     submitBtn: {
         textDecoration: 'none'
     },
     topBar: {
-        display: 'flex'
+        position: 'absolute',
+        left: '2vw'
     },
     firstItemInYear: {
         paddingTop: 10,
@@ -39,25 +51,43 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         backgroundColor: '#d9d9d9'
+    },
+    right_button: {
+        position: 'absolute',
+        marginLeft: '60vw',
+        width: '15vw'
     }
 }))
 
 function Verify(props) {
-    const currUser = props.location.userInfo;
-    const prevData = props.location.prevData;
+    let checkedInfo;
+    console.log(props.location.state)
+    if (props.location.state === null) {
+        if (sessionStorage.getItem('home') === null) {
+            navigate('/', { replace: true })
+        }
+        else {
+            checkedInfo = JSON.parse(sessionStorage.getItem('home'))
+        }
+    }
+    else {
+        checkedInfo = props.location.state.checkedArray;
+        sessionStorage.setItem('home', JSON.stringify(checkedInfo));
+    }
+    const currUser = checkedInfo;
     const classes = useStyles();
     const [papers, setPaper] = useState([]);
-    const [currYear, setYear] = useState(0);
-    const [currYears, setYears] = useState([]);
-    const [currFullYearPaper, setFullYearPaper] = useState({});
     const [currPaper, setCurrPaper] = useState([]);
     const [currPage, setCurrPage] = useState(1);
-    const [currCheckbox, setCurrCheckbox] = useState([]);
     const [currPageTotal, setPageTotal] = useState(0);
     const [checkedList, setCheckList] = useState({});
+    const [results, setResults] = useState({});
+    const [submitForm, setSubmitForm] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(async () => {
         let tem = [];
+        let tem_results = {};
         for (let index in currUser) {
             const currAuthorID = currUser[index];
             console.log(currAuthorID)
@@ -66,7 +96,7 @@ function Verify(props) {
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                 params: {
                     expr: `And(Composite(AA.AuId=${currAuthorID}), Y>=2011)`,
-                    attributes: 'Y,AA.AuId,AA.AuN,Ti,VFN',
+                    attributes: 'Y,AA.AuId,AA.AuN,Id,DOI,Ti,VFN',
                     'subscription-key': 'f6714001211242e982d92a3646ececed',
                     count: 1000
                 }
@@ -88,36 +118,24 @@ function Verify(props) {
                             }
                             filteredArray.push(paper);
                             namelist.push(paper.Ti);
-                            tem_checklist[paper.Ti] = [false, false, false, true];
-                            if (fullYearPaper[paper.Y] === undefined) {
-                                fullYearPaper[paper.Y] = []
-                            }
-                            fullYearPaper[paper.Y].push(paper);
-                            paper['GENI'] = false;
-                            paper['Cloudlab'] = false;
-                            paper['Chameleon'] = false;
-                            paper['None'] = true;
-
+                            tem_checklist[paper.Id] = [false, false, false, true];
+                            tem_results[paper.Id] = paper;
                         }
                     })
                     filteredArray.sort((a, b) => {
                         return b.Y - a.Y
                     });
-                    setCheckList(tem_checklist);
-                    setFullYearPaper(fullYearPaper);
+                    setCheckList(sessionStorage.getItem('checklist') === null ? tem_checklist : JSON.parse(sessionStorage.getItem('checklist')));
+                    setResults(tem_results);
                     setPaper(filteredArray);
                     setCurrPaper(filteredArray.slice(0, 10));
-                    setPageTotal(Math.floor(filteredArray.length / 10) + 1)
-                    let plainCheckbox = [];
-                    plainCheckbox[filteredArray.length - 1] = [0, 0, 0, 1];
-                    let filledCheckbox = plainCheckbox.fill([false, false, false, true], 0, filteredArray.length - 1);
-                    setCurrCheckbox(filledCheckbox);
+                    setPageTotal(Math.ceil(filteredArray.length / 10))
                 }
             }).catch(e => {
                 console.log(e);
             })
         }
-    }, [currUser])
+    }, [])
 
     useEffect(() => {
         if (currPageTotal !== 0) {
@@ -145,39 +163,56 @@ function Verify(props) {
 
 
     const handlePageChange = (event, value) => {
+        results['checklist'] = checkedList;
+        axios({
+            url: 'http://localhost:5000/save',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(results)
+        }).then(res => { })
+            .catch(e => console.log(e))
         setCurrPage(value);
     }
 
-    const handleCheckBox = (name, field) => {
-        console.log(checkedList);
-        console.log(field);
+    const handleCheckBox = (id, field) => {
         let newCheckList = JSON.parse(JSON.stringify(checkedList));
-        if (field == 3 && checkedList[name][3] == false) {
-            newCheckList[name][0] = false;
-            newCheckList[name][1] = false;
-            newCheckList[name][2] = false;
+        if (field == 3 && checkedList[id][3] == false) {
+            newCheckList[id][0] = false;
+            newCheckList[id][1] = false;
+            newCheckList[id][2] = false;
         }
-        else if(checkedList[name][3] == true){
-            newCheckList[name][3] = false;
+        else if (checkedList[id][3] == true) {
+            newCheckList[id][3] = false;
         }
-        newCheckList[name][parseInt(field)] = !checkedList[name][parseInt(field)];
-        console.log(newCheckList);
+        newCheckList[id][parseInt(field)] = !checkedList[id][parseInt(field)];
         setCheckList(newCheckList);
+        sessionStorage.setItem('checklist', JSON.stringify(newCheckList));
+    }
+
+    const handleDataSubmit = () => {
+        results['checklist'] = checkedList;
+        axios({
+            url: 'http://localhost:5000/insert',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(results)
+        }).then(res => {
+            //navigate('/submit', { replace: true })
+        }).catch(e => console.log(e))
     }
 
     return (
         <div>
             <Container className={classes.container}>
-                <div className={classes.topBar}><Typography><Link to={{ pathname: '/home', userInfo: prevData }}><Button><ArrowBackIcon /></Button></Link></Typography> <Link className={classes.submitBtn} to={{ pathname: '/submit', checkedList: checkedList, papers: papers, ids: currUser }}><Button variant="outlined" fullWidth color="secondary">Submit</Button></Link></div>
+                <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
                 <br />
                 {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the name(s) you gave us at the start of the survey, we have pulled all the papers listed in Microsoft Academic that you have authored since 2011. Please select the testbed(s) that were used in the research about which the paper reports. By default, None (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
                 <br />
-                <div className={classes.buttonContainer}><Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} /> </div>
-                {/* <div className={classes.yearTag}>Filter by years: {currYears.map(year => <Button variant="outlined" className={classes.yearBtn} color="primary" onClick={() => { setCurrPage(1); setYear(year); }}>{year}</Button>)}<Button variant="outlined" className={classes.yearBtn} color="primary" onClick={() => {
-                    setYear(0);
-                    setCurrPaper(papers.slice(0, 10));
-                    setPageTotal(Math.floor(papers.length / 10) + 1)
-                }}>ALL</Button></div> */}
+                <div className={classes.buttonContainer}><div className={classes.topBar}><Link className="clean-button" to='/home'><Button variant="outlined" color="primary"><ArrowBackIcon />Go Back</Button></Link></div><Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} /></div>
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -190,19 +225,23 @@ function Verify(props) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {currPaper.map((paper, index) => <TableRow>{
-                            paper.firstItemInYear ? <TableCell classes={{ root: classes.root }}><Typography className={classes.firstItemInYear}><b>{paper.Y}</b></Typography></TableCell> : <span></span>
+                        {currPaper.map((paper, index) => <TableRow key={paper.Ti}>{
+                            paper.firstItemInYear || index === 0 ? <TableCell classes={{ root: classes.root }}><Typography className={classes.firstItemInYear}><b>{paper.Y}</b></Typography></TableCell> : <span></span>
                         }
-                            <TableCell><div><Typography>{renderAuthorList(paper.AA)}</Typography><Typography>{capitalizeFirstLetter(paper.Ti)}</Typography><Typography>{paper.VFN}</Typography></div></TableCell>
-                            <TableCell><Checkbox checked={checkedList[paper.Ti][0]} onChange={() => handleCheckBox(paper.Ti, 0)}></Checkbox></TableCell>
-                            <TableCell><Checkbox checked={checkedList[paper.Ti][1]} onChange={() => handleCheckBox(paper.Ti, 1)}></Checkbox></TableCell>
-                            <TableCell><Checkbox checked={checkedList[paper.Ti][2]} onChange={() => handleCheckBox(paper.Ti, 2)}></Checkbox></TableCell>
-                            <TableCell><Checkbox checked={checkedList[paper.Ti][3]} onChange={() => handleCheckBox(paper.Ti, 3)}></Checkbox></TableCell>
+                            <TableCell><div><Typography><i>{capitalizeFirstLetter(paper.Ti)}</i></Typography><Typography>{renderAuthorList(paper.AA)}</Typography><Typography>{paper.VFN}</Typography></div></TableCell>
+                            <TableCell><Checkbox checked={checkedList[paper.Id][0]} onChange={() => handleCheckBox(paper.Id, 0)}></Checkbox></TableCell>
+                            <TableCell><Checkbox checked={checkedList[paper.Id][1]} onChange={() => handleCheckBox(paper.Id, 1)}></Checkbox></TableCell>
+                            <TableCell><Checkbox checked={checkedList[paper.Id][2]} onChange={() => handleCheckBox(paper.Id, 2)}></Checkbox></TableCell>
+                            <TableCell><Checkbox checked={checkedList[paper.Id][3]} onChange={() => handleCheckBox(paper.Id, 3)}></Checkbox></TableCell>
                         </TableRow>)}
                     </TableBody>
                 </Table>
+                <Dialog open={submitForm} onClose={() => setSubmitForm(false)}>
+                    <DialogContent>Are you sure to submit your survey?</DialogContent>
+                    <DialogActions><Button color="primary" onClick={handleDataSubmit}>Yes</Button><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button></DialogActions>
+                </Dialog>
                 <div className={classes.buttonContainer}>
-                    <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />
+                    <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className={classes.right_button}><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className={classes.right_button}><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Next</Button></div>}
                 </div>
             </Container>
         </div>
