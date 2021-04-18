@@ -38,10 +38,34 @@ exports.PubConnectInsert = async function (req, res) {
                 }
 
             })
-            res.send({
-                "message": "success"
-            })
         }
+    }
+}
+
+exports.PubConnectSaveUser = async function (req, res) {
+    const props = req.body;
+    for (let i = 0; i < props.checkedArray.length; i++) {
+        const _institutionSQL = `INSERT IGNORE INTO affiliation(institution_name) VALUES ('${props.checkedArray[i][1]}')`
+        await connection.query(_institutionSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into institution`)
+        })
+        const _authorSQL = `INSERT IGNORE INTO author(email) VALUES ('${props['userInfo'][1]}')`
+        await connection.query(_authorSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into author`)
+        })
+        const _authorAffiliationSQL = `INSERT IGNORE INTO author_affiliation(author_id, institution_id) VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), (SELECT institution_id FROM affiliation WHERE institution_name='${props.checkedArray[i][1]}'))`
+        await connection.query(_authorAffiliationSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into author affiliation`)
+        })
+
+        const _authorMSidSQL = `INSERT IGNORE INTO author_id VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), '${props.checkedArray[i][0]}')`
+        await connection.query(_authorMSidSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into author author_msid`)
+        })
     }
 }
 
@@ -56,6 +80,11 @@ exports.PubConnectSave = async function (req, res) {
                 await connection.query(_paperSQL, function (err, result) {
                     if (err) throw err;
                     console.log(`inserted into paper`)
+                })
+                const _authorPaperSQL = `INSERT IGNORE INTO author_papers VALUES ((SELECT author_id FROM author WHERE email='${props['email']}'), (SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}'))`
+                await connection.query(_authorPaperSQL, function (err, result) {
+                    if (err) throw err;
+                    console.log(`inserted into author_paper`)
                 })
             }
             const _deleteSavedSQL = `DELETE FROM testbed_saved_papers WHERE paper_id = (SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')`;
@@ -82,6 +111,11 @@ exports.PubConnectSave = async function (req, res) {
                 })
             }
             if (result.length !== 0 && props.checklist[this_id][3] === true) {
+                const _deleteAuthorPaperSQL = `DELETE FROM author_papers WHERE paper_id= (SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')`;
+                await connection.query(_deleteAuthorPaperSQL, function (err, result) {
+                    if (err) throw err;
+                })
+
                 const _deletePaperSQL = `DELETE FROM paper WHERE ms_paper_id='${props[this_id].Id}'`;
                 await connection.query(_deletePaperSQL, function (err, result) {
                     if (err) throw err;

@@ -61,7 +61,6 @@ const useStyles = makeStyles((theme) => ({
 
 function Verify(props) {
     let checkedInfo;
-    console.log(props.location.state)
     if (props.location.state === null) {
         if (sessionStorage.getItem('home') === null) {
             navigate('/', { replace: true })
@@ -77,6 +76,7 @@ function Verify(props) {
     const currUser = checkedInfo;
     const classes = useStyles();
     const [papers, setPaper] = useState([]);
+    const [authorID, setAuthorID] = useState();
     const [currPaper, setCurrPaper] = useState([]);
     const [currPage, setCurrPage] = useState(1);
     const [currPageTotal, setPageTotal] = useState(0);
@@ -85,12 +85,23 @@ function Verify(props) {
     const [submitForm, setSubmitForm] = useState(false);
     const navigate = useNavigate();
 
+    const saveUser = () => {
+        axios({
+            method: 'POST',
+            url: `http://localhost:5000/save_user`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(props.location.state)
+        })
+    }
+
     useEffect(async () => {
+        saveUser();
         let tem = [];
         let tem_results = {};
         for (let index in currUser) {
-            const currAuthorID = currUser[index];
-            console.log(currAuthorID)
+            const currAuthorID = currUser[index][0];
             const result = await axios({
                 method: 'GET',
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
@@ -164,6 +175,7 @@ function Verify(props) {
 
     const handlePageChange = (event, value) => {
         results['checklist'] = checkedList;
+        results['email'] = props.location.state.userInfo[1];
         axios({
             url: 'http://localhost:5000/save',
             method: 'POST',
@@ -201,7 +213,7 @@ function Verify(props) {
             },
             data: JSON.stringify(results)
         }).then(res => {
-            //navigate('/submit', { replace: true })
+            navigate('/submit', { replace: true })
         }).catch(e => console.log(e))
     }
 

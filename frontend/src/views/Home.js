@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 function Home(props) {
     let userInfo;
     if (sessionStorage.getItem('login') === null) {
-        userInfo = props.location.state.userInfo[0];
+        userInfo = props.location.state.userInfo;
         sessionStorage.setItem('login', JSON.stringify(userInfo))
     }
     else {
@@ -43,9 +43,18 @@ function Home(props) {
         return s.replaceAll(/ [a-z]/g, z => z.toUpperCase());
     }
 
+    function findAfN(author_lists, author_id) {
+        for (let i = 0; i < author_lists.length; i++) {
+            let curr_author = author_lists[i];
+            if (curr_author['AuId'] === author_id) {
+                return curr_author['AfN'];
+            }
+        }
+    }
+
     useEffect(async () => {
         let tem = [];
-        for await (let i of userInfo) {
+        for await (let i of userInfo[0]) {
             let lowerCaseName = i.toLowerCase();
             axios({
                 method: 'GET',
@@ -66,7 +75,6 @@ function Home(props) {
                     }
                 }
                 tem.push(Array.from(ids));
-                // tem = [...tem, ...Array.from(ids)];
                 if (tem.length == userInfo.length) {
                     let newArray = Array.prototype.concat.apply([], tem);
                     newArray.sort();
@@ -88,21 +96,17 @@ function Home(props) {
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                 params: {
                     expr: `Composite(AA.AuId=${currentAuthorID})`,
-                    attributes: 'AA.AuId,AA.AuN,DOI,Id,Ti,VFN,Y,CC',
+                    attributes: 'AA.AuId,AA.AfN,AA.AuN,DOI,Id,Ti,VFN,Y,CC',
                     'subscription-key': 'f6714001211242e982d92a3646ececed',
                     count: 1000
                 }
             }).then(res => {
                 if (res.data.entities.length !== 0) {
-                    let oldObj = res.data.entities;
-                    oldObj[0].Ti = capitalizeFirstLetter(oldObj[0].Ti);
-                    tem.push([currentAuthorID, res.data.entities]);
-                    console.log(res.data.entities)
+                    tem.push([currentAuthorID, findAfN(res.data.entities[0]['AA'],currentAuthorID), res.data.entities[0]]);
                 }
                 visited.push("1");
                 if (visited.length == authorIDArray.length) {
                     setAuthorArticle(authorArticle.concat(tem));
-                    console.log(tem);
                 }
             }).catch(e => {
                 console.log(e);
@@ -111,7 +115,6 @@ function Home(props) {
     }, [authorIDArray])
 
     const handleCheckBox = props => {
-        console.log(checkedArray);
         let index = checkedArray.indexOf(props);
         if (index !== -1) {
             let newArray = [...checkedArray];
@@ -146,10 +149,10 @@ function Home(props) {
                 <i>At the end of the survey, we will provide you with a link(s) to your paper listings in Microsoft Academic. If you have more than one listing because Microsoft Academic shows more than one name for you, we will provide you with some brief instructions on how to merge your identities in Microsoft Academic if you would like to do so.</i>
             </div>
             {authorArticle.map(this_author => <Card className={classes.card}>
-                <CardContent><Checkbox checked={checkedArray.includes(this_author[0])} onClick={() => { handleCheckBox(this_author[0]) }}></Checkbox>
-                    <Typography>{renderAuthorList(this_author[1][0].AA)}</Typography><Typography>{this_author[1][0].Ti}</Typography><Typography>{this_author[1][0].VFN == undefined ? "" : this_author[1][0].VFN + ", "}{this_author[1][0].Y}</Typography></CardContent>
+                <CardContent><Checkbox checked={checkedArray.includes(this_author)} onClick={() => { handleCheckBox(this_author) }}></Checkbox>
+                    <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography>{this_author[2].Ti}</Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
             </Card>)}
-            <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>
+            <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray, userInfo: userInfo }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>
 
         </div>
     )
