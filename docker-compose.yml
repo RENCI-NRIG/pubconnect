@@ -1,6 +1,19 @@
-version: '2.1'
+version: '3.7'
 
 services: 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes: 
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules/
+    ports: 
+      - 5000:5000
+    depends_on: 
+      - db
+    
+
   db:
     image: mysql:5.7
     restart: always
@@ -29,19 +42,3 @@ services:
       - /usr/src/app/node_modules
     ports:
       - 3000:3000
-
-  # backend:
-  #   restart: always
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   volumes: 
-  #     - ./backend:/usr/src/app
-  #     - /usr/src/app/node_modules/
-  #   ports: 
-  #     - 5000:5000
-  #   depends_on: 
-  #     db:
-  #       condition: service_healthy
-  #   links:
-  #     - db
