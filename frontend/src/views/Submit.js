@@ -24,6 +24,7 @@ const useStyles = makeStyles((theme) => ({
 function Submit(props) {
     const classes = useStyles();
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
+    sessionStorage.clear();
 
     return (
         <div className={classes.container}>
@@ -39,7 +40,7 @@ function Submit(props) {
             </CardContent></Card>
             <br />
             <Typography>We found {userIDs.length} names for you in Microsoft Academic.</Typography>
-            { userIDs.map(id => <Typography>ID: {id}</Typography>)}
+            { userIDs.map(id => <Typography>ID: {id[0]}</Typography>)}
             <br />
         </div>
     )
