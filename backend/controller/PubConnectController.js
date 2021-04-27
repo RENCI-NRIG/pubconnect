@@ -3,7 +3,8 @@ const { connection } = require('../config/db');
 
 exports.PubConnectInsert = async function (req, res) {
     const props = req.body;
-    for (const this_id in props.checklist) {
+    for (let i = 0; i < Object.keys(props.checklist).length; i++) {
+        const this_id = Object.keys(props.checklist)[i];
         if (props.checklist[this_id][3] === false) {
             const _checkSQL = `SELECT * FROM paper WHERE ms_paper_id = ${props[this_id].Id}`;
             await connection.query(_checkSQL, async function (err, result) {
@@ -36,8 +37,13 @@ exports.PubConnectInsert = async function (req, res) {
                         console.log(`inserted into chameleon`)
                     })
                 }
-
             })
+            if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
+                res.send({ 'message': 'Data inserted into database.' })
+            }
+        }
+        if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
+            res.send({ 'message': 'Data operation complete.' })
         }
     }
 }
@@ -66,12 +72,16 @@ exports.PubConnectSaveUser = async function (req, res) {
             if (err) throw err;
             console.log(`inserted into author author_msid`)
         })
+        if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
+            res.send({ 'message': 'Data inserted into database.' })
+        }
     }
 }
 
 exports.PubConnectSave = async function (req, res) {
     const props = req.body;
-    for (const this_id in props.checklist) {
+    for (let i = 0; i < Object.keys(props.checklist).length; i++) {
+        const this_id = Object.keys(props.checklist)[i];
         const _checkSQL = `SELECT * FROM paper WHERE ms_paper_id = ${props[this_id].Id}`;
         await connection.query(_checkSQL, async function (err, result) {
             if (err) throw err;
@@ -122,5 +132,8 @@ exports.PubConnectSave = async function (req, res) {
                 })
             }
         })
+        if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
+            res.send({ 'message': 'Data inserted into database.' })
+        }
     }
 }
