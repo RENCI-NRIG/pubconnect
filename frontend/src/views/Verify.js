@@ -245,7 +245,7 @@ function Verify(props) {
                 <DialogActions><Button color="primary" onClick={handleDataSubmit}>Yes</Button><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button></DialogActions>
             </Dialog>
             <div className={classes.buttonContainer}>
-                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className={classes.right_button}><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Next</Button></div>}
+                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Next</Button></div>}
             </div>
         </Container>
     )
