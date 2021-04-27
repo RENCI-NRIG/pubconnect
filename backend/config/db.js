@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host: 'pubconnect.renci.org',
+  host: '152.54.2.107',
   user: 'user',
   password: 'password',
   database: 'db'
@@ -24,7 +24,7 @@ const initializeDB = () => {
 
   connection.connect(function (err) {
     if (err) throw err;
-    console.log("Connected!");
+    console.log("Connected to host 152.54.2.107");
     arrays.forEach(query => {
       connection.query(query, function (err, result) {
         if (err) throw err;
