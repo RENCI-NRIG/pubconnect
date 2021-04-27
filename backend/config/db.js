@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
+  host: 'pubconnect.renci.org',
   user: 'user',
   password: 'password',
   database: 'db'

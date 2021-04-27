@@ -1,5 +1,5 @@
 # Base image
-FROM node:10.15.3
+FROM node:10.15.3 AS builder
 
 # Create and set working directory
 RUN mkdir -p /usr/src/app
@@ -8,13 +8,20 @@ WORKDIR /usr/src/app
 # Add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-# Environment variables
-
 # Install and cache app dependencies
 COPY package*.json ./
 RUN npm install
 
-EXPOSE 3000
+COPY . ./
 
-# Start app
-CMD ["npm", "start"]
+#Build project
+RUN npm run build
+
+##########################
+
+FROM nginx:latest
+
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html/
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
