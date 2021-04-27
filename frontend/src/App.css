@@ -91,6 +91,18 @@
   margin-top: 20px;
 }
 
+.verify_back_button{
+  position: absolute;
+  left: 10vw;
+  margin-top: 2vh;
+}
+
+.verify_save_button{
+  position: absolute;
+  width: 8vw;
+  margin-left: 40vh;
+}
+
 body {
   height: 100vh;
 }
