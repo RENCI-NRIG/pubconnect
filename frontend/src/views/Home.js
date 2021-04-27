@@ -102,7 +102,7 @@ function Home(props) {
                 }
             }).then(res => {
                 if (res.data.entities.length !== 0) {
-                    tem.push([currentAuthorID, findAfN(res.data.entities[0]['AA'],currentAuthorID), res.data.entities[0]]);
+                    tem.push([currentAuthorID, findAfN(res.data.entities[0]['AA'], currentAuthorID), res.data.entities[0]]);
                 }
                 visited.push("1");
                 if (visited.length == authorIDArray.length) {
@@ -114,18 +114,25 @@ function Home(props) {
         }
     }, [authorIDArray])
 
+    const checkIfInArray = (array, item) => {
+        for (let i = 0; i < array.length; i++) {
+            if (array[i][0] === item[0] && array[i][1] === item[1]) {
+                return i;
+            }
+        }
+        return -1;
+    } 
+
     const handleCheckBox = props => {
-        let index = checkedArray.indexOf(props);
+        let index = checkIfInArray(checkedArray, props);
         if (index !== -1) {
             let newArray = [...checkedArray];
             newArray.splice(index, 1);
             setCheckArray(newArray);
-            console.log(newArray)
         }
         else {
             let newArray = [...checkedArray, props];
             setCheckArray(newArray);
-            console.log(newArray)
         }
     }
 
@@ -149,7 +156,7 @@ function Home(props) {
                 <i>At the end of the survey, we will provide you with a link(s) to your paper listings in Microsoft Academic. If you have more than one listing because Microsoft Academic shows more than one name for you, we will provide you with some brief instructions on how to merge your identities in Microsoft Academic if you would like to do so.</i>
             </div>
             {authorArticle.map(this_author => <Card className={classes.card}>
-                <CardContent><Checkbox checked={checkedArray.includes(this_author)} onClick={() => { handleCheckBox(this_author) }}></Checkbox>
+                <CardContent><Checkbox checked={checkIfInArray(checkedArray, this_author) !== -1} onClick={() => { handleCheckBox(this_author) }}></Checkbox>
                     <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography>{this_author[2].Ti}</Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
             </Card>)}
             <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray, userInfo: userInfo }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>

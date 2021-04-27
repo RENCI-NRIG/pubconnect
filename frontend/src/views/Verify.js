@@ -62,6 +62,7 @@ function Verify(props) {
     }
     else {
         checkedInfo = props.location.state.checkedArray;
+        console.log(checkedInfo)
         sessionStorage.setItem('home', JSON.stringify(checkedInfo));
     }
     const currUser = checkedInfo;

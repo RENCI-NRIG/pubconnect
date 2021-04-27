@@ -24,17 +24,6 @@ const useStyles = makeStyles((theme) => ({
 function Submit(props) {
     const classes = useStyles();
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
-    const handleDataSubmit = () => {
-        axios({
-            url: 'http://localhost:5000/insert',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(props.location)
-        }).then(res => console.log(res))
-            .catch(e => console.log(e))
-    }
 
     return (
         <div className={classes.container}>
