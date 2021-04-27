@@ -10,7 +10,7 @@ import { useBeforeunload } from 'react-beforeunload';
 function App() {
   useBeforeunload(() => "Are you sure to leave?")
   return (
-    <Router>
+    <Router style={{ height: '100%'}}>
       <Submit path="/submit" />
       <Verify path="/verify" />
       <Home path="/home" />

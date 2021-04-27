@@ -29,16 +29,21 @@
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .login_wrap{
   margin-top: 2vh;
   flex-grow: 1;
+  max-width: 80vw;
 }
 
 .login_footer{
   flex-shrink: 0;
-  margin: 5vw;
+  margin: 2vw;
+  font-size: 14px;
+  width: 80vw;
 }
 
 .login_logo{
@@ -79,7 +84,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 40vw;
+  width: 30vw;
 }
 
 .submit_button{
