@@ -64,7 +64,7 @@ function Login() {
                     <div id="username_group">
                         <div className="login_namefield"><TextField variant="outlined" className={classes.input} label="Email" fullWidth="true" placeholder="john.doe@gmail.com" onChange={(e) => { setEmail(e.target.value) }}></TextField></div>
                         {usernames.map((username, index) =>
-                            <div key="index" className="login_namefield"><TextField variant="outlined" label="Full Name" fullWidth="true" className={classes.input} value={username} placeholder="John Doe" onChange={(e) => {
+                            <div key="index" className="login_namefield"><TextField variant="outlined" label="First Last Name" fullWidth="true" className={classes.input} value={username} placeholder="John Doe" onChange={(e) => {
                                 let newArray = usernames.slice();
                                 newArray[index] = e.target.value;
                                 setUserNames(newArray);
