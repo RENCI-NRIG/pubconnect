@@ -31,15 +31,15 @@ function Submit(props) {
             <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
             <Card className={classes.card}><CardContent>Thank you so much for taking the time to complete this survey!
         <hr />
-                <p>Prize:</p>
-                <p>Participation Prize | Sticker (Chameleon, FABRIC, CloudLab?) | First 175 to complete the survey
-                Postage</p>
-                <p>Second Prize | $25 Amazon Gift Card | 6 Recipients selected by Gleam.io at random</p>
-                <p>First Prize | $50 Amazon Gift Card | 3 Recipients selected by Gleam.io at random</p>
-                <p>Grand Prize | FABRIC Beta Tester or Travel | 10 Recipients selected by Gleam.io at random</p>
+                <p><b>You are entered into the raffle!</b></p>
+                <p>Participation Prize: The first 175 people to complete the survey will earn a  Sticker </p>
+                <p>Second Prize: 6 participants will win a $25 Amazon gift card</p>
+                <p>First Prize: 3 participants will win a $50 Amazon gift card</p>
+                <p>Grand Prize: 10 participants will win the opportunity to be a  FABRIC beta tester</p>
+                <p>Want to earn more opportunities to win? Check out your options <a href="https://gleam.io/">here</a>.</p>
             </CardContent></Card>
             <br />
-            <Typography>We found {userIDs.length} names for you in Microsoft Academic.</Typography>
+            <Typography>We found {userIDs.length} names for you in Microsoft Academic. Visit <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D">this page</a> for more information on how to set-up your Microsoft Academic profile page: Keep your profile--and yourself--up to date.</Typography>
             { userIDs.map(id => <Typography>ID: {id[0]}</Typography>)}
             <br />
         </div>

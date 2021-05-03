@@ -46,17 +46,12 @@ function Login() {
                 <div className="form">
                     <Card className={classes.card}>
                         <CardContent>
-                            <p>Thank you for participating in our PubConnect Testbed Survey!</p>
-
-                            <p><b>Survey Goals</b> - We are conducting this survey to learn more about published papers that benefitted in some way from use of the GENI, Chameleon, or CloudLab testbeds, so we can report the impact these testbeds have had on the research community to the National Science Foundation (NSF)--the funding agency that supports the work on these testbeds, and
-                to inform the design of an application that will help authors and testbed developers track publications that reference the use of a testbed.</p>
-
-                            <p><b>How the Survey Results will be Used</b> -
-                As stated above, we will use the citations to report on the testbeds’ impact to NSF.
-                We may also list the citations on the testbeds’ websites. For instance, GENI papers are listed on the GENI website.</p>
-
-                            <p><b>How the Survey Works</b> -
-                We begin by trying to identify you in Microsoft Academic by whatever name(s) you have published under. Then we will show you a list of papers you have written since 2011--when the first of these testbeds was introduced--and ask you to select the testbed(s) that were used in the research that led you to write the paper.</p>
+                            <p>Thank you for participating in our PubConnect Testbed Survey! We suggest you complete the survey in one sitting because you may not be able to save your progress if you return at a later time.</p>
+                            <p><b>How the Survey Works</b> - The survey should take about 10 minutes to complete and has two short parts: We identify you in Microsoft Academic by whatever name(s) you have published under. We show a list of papers that you have written since 2011*; you select the testbed(s) used in the research that led you to write the paper.</p>
+                            <p>*The year the first of these testbeds were introduced.</p>
+                            <hr />
+                            <p><b>Thank you!</b> -
+                            By completing the survey, we would like to offer you a token of our appreciation! You will automatically be entered into a raffle to win Amazon gift cards and the opportunity to be a <a href="https://www.whatisfabric.net/">FABRIC beta tester</a>, and If you are listed multiple times in Microsoft Academic, we give you the opportunity to combine the names you’ve published under into a single Microsoft Academic listing at the end of the survey.</p>
                         </CardContent>
                     </Card>
                     <p><b>Getting Started</b> -
