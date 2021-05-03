@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   margin: 2vw 2vh;
+  align-items: center;
 }
 
 .clean-button{
@@ -78,6 +79,7 @@
   margin: 0px 20px 20px 20px;
   display: flex;
   flex-direction: column;
+  width: 50%;
 }
 
 #username_group{
