@@ -4,13 +4,15 @@ import ReplayIcon from '@material-ui/icons/Replay';
 import PubConnectSmall from '../PC-small.png';
 import { Link } from '@reach/router';
 import '../App.css';
+import { capitalizeFirstLetter } from '../helper/format';
 
 import { Button, Card, CardContent, Checkbox, Typography, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     card: {
         margin: theme.spacing(2),
-        backgroundColor: '#d9d9d9'
+        backgroundColor: '#d9d9d9',
+        width: '50%'
     },
     link_button: {
         margin: theme.spacing(2),
@@ -156,10 +158,10 @@ function Home(props) {
 
                 <i>At the end of the survey, we will provide you with a link(s) to your paper listings in Microsoft Academic. If you have more than one listing because Microsoft Academic shows more than one name for you, we will provide you with some brief instructions on how to merge your identities in Microsoft Academic if you would like to do so.</i>
             </div>
-            <div>
+            <div class="home_card_container">
                 {authorArticle.map(this_author => <Card className={classes.card}>
                     <CardContent><Checkbox checked={checkIfInArray(checkedArray, this_author) !== -1} onClick={() => { handleCheckBox(this_author) }}></Checkbox>
-                        <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography>{this_author[2].Ti}</Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
+                        <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography><i>{capitalizeFirstLetter(this_author[2].Ti)}</i></Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
                 </Card>)}
             </div>
             <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray, userInfo: userInfo }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>

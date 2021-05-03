@@ -219,8 +219,6 @@ function Verify(props) {
             <br />
             {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the name(s) you gave us at the start of the survey, we have pulled all the papers listed in Microsoft Academic that you have authored since 2011. Please select the testbed(s) that were used in the research about which the paper reports. By default, None (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
             <br />
-            <div className={classes.buttonContainer}>
-                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} /></div>
             <Table>
                 <TableHead>
                     <TableRow>
