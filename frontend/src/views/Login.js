@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Login() {
-    const [usernames, setUserNames] = useState(sessionStorage.getItem('login') === null ? ["", ""] : JSON.parse(sessionStorage.getItem('login')));
+    const [usernames, setUserNames] = useState(sessionStorage.getItem('login') === null ? [""] : JSON.parse(sessionStorage.getItem('login')));
     const [namesCounter, setNamesCounter] = useState([0]);
     const [email, setEmail] = useState();
     const classes = useStyles();
@@ -55,9 +55,9 @@ function Login() {
                         </CardContent>
                     </Card>
                     <p><b>Getting Started</b> -
-                Please first enter your email address,* and full name in the fields below. If you have published under more than one name, please click the + button to add those other names.</p>
+                Please enter your full name in the fields below. If you have published under more than one name, please click the + button to add those other names.</p>
                     <div id="username_group">
-                        <div className="login_namefield"><TextField variant="outlined" className={classes.input} label="Email" fullWidth="true" placeholder="john.doe@gmail.com" onChange={(e) => { setEmail(e.target.value) }}></TextField></div>
+                        {/* <div className="login_namefield"><TextField variant="outlined" className={classes.input} label="Email" fullWidth="true" placeholder="john.doe@gmail.com" onChange={(e) => { setEmail(e.target.value) }}></TextField></div> */}
                         {usernames.map((username, index) =>
                             <div key="index" className="login_namefield"><TextField variant="outlined" label="First Last Name" fullWidth="true" className={classes.input} value={username} placeholder="John Doe" onChange={(e) => {
                                 let newArray = usernames.slice();

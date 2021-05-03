@@ -17,14 +17,14 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         backgroundColor: '#00758d',
-        color: 'white'
+        color: 'white',
+        width: '700px'
     }
 }))
 
 function Submit(props) {
     const classes = useStyles();
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
-    sessionStorage.clear();
 
     return (
         <div className={classes.container}>
@@ -36,12 +36,14 @@ function Submit(props) {
                 <p>Second Prize: 6 participants will win a $25 Amazon gift card</p>
                 <p>First Prize: 3 participants will win a $50 Amazon gift card</p>
                 <p>Grand Prize: 10 participants will win the opportunity to be a  FABRIC beta tester</p>
+                <br />
                 <p>Want to earn more opportunities to win? Check out your options <a href="https://gleam.io/">here</a>.</p>
             </CardContent></Card>
             <br />
-            <Typography>We found {userIDs.length} names for you in Microsoft Academic. Visit <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D">this page</a> for more information on how to set-up your Microsoft Academic profile page: Keep your profile--and yourself--up to date.</Typography>
+            <Typography>We found {userIDs.length} names for you in Microsoft Academic.</Typography>
             { userIDs.map(id => <Typography>ID: {id[0]}</Typography>)}
             <br />
+            <Typography>Visit <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D">this page</a> for more information on how to set-up your Microsoft Academic profile page.</Typography>
         </div>
     )
 }

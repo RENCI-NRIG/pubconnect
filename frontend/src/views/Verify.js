@@ -90,11 +90,13 @@ function Verify(props) {
     }
 
     useEffect(async () => {
-        saveUser();
+        // saveUser();
         let tem = [];
         let tem_results = {};
         for (let index in currUser) {
             const currAuthorID = currUser[index][0];
+            console.log(currAuthorID)
+
             const result = await axios({
                 method: 'GET',
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
@@ -167,17 +169,17 @@ function Verify(props) {
 
 
     const handlePageChange = (event, value) => {
-        results['checklist'] = checkedList;
-        results['email'] = props.location.state.userInfo[1];
-        axios({
-            url: `${baseUrl}:5000/save`,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(results)
-        }).then(res => { })
-            .catch(e => console.log(e))
+        // results['checklist'] = checkedList;
+        // results['email'] = props.location.state.userInfo[1];
+        // axios({
+        //     url: `${baseUrl}:5000/save`,
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     data: JSON.stringify(results)
+        // }).then(res => { })
+        //     .catch(e => console.log(e))
         setCurrPage(value);
     }
 
@@ -197,17 +199,18 @@ function Verify(props) {
     }
 
     const handleDataSubmit = () => {
-        results['checklist'] = checkedList;
-        axios({
-            url: `${baseUrl}:5000/insert`,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(results)
-        }).then(res => {
-            navigate('/submit', { replace: true })
-        }).catch(e => console.log(e))
+        navigate('/submit', { replace: true })
+        // results['checklist'] = checkedList;
+        // axios({
+        //     url: `${baseUrl}:5000/insert`,
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     data: JSON.stringify(results)
+        // }).then(res => {
+        //     navigate('/submit', { replace: true })
+        // }).catch(e => console.log(e))
     }
 
     return (

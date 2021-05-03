@@ -75,7 +75,7 @@ function Home(props) {
                     }
                 }
                 tem.push(Array.from(ids));
-                if (tem.length == userInfo.length) {
+                if (tem.length == userInfo[0].length) {
                     let newArray = Array.prototype.concat.apply([], tem);
                     newArray.sort();
                     setAuthorIDArray(newArray);
@@ -149,7 +149,7 @@ function Home(props) {
         <div class="container">
             <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
             <Typography><Link className="clean-button" to='/'><Button variant="outlined" color="primary" onClick={() => sessionStorage.clear()}><ReplayIcon />Start Over</Button></Link></Typography>
-            <div className="home_text"><p>Based on the name(s) and email address you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select those papers below that are, in fact, authored by you.</p>
+            <div className="home_text"><p>Based on the name(s) you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select those papers below that are, in fact, authored by you.</p>
 
                 <p> Once you complete this step, we confirm which Microsoft Academic IDs are yours and then we will show you a listing of all the papers listed in Microsoft Academic that you have written since 2011.</p>
 
