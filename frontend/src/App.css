@@ -22,7 +22,8 @@
 
 .login_button{
   text-decoration: none;
-  width: 100%;
+  margin-top: 40px;
+  width: 500px;
 }
 
 .login_body{
@@ -36,18 +37,18 @@
 .login_wrap{
   margin-top: 2vh;
   flex-grow: 1;
-  max-width: 80vw;
+  max-width: 1500px;
 }
 
 .login_footer{
   flex-shrink: 0;
   margin: 2vw;
   font-size: 14px;
-  width: 80vw;
+  max-width: 1500px;
 }
 
 .login_logo{
-  width: 25vw;
+  width: 400px;
 }
 
 .logoBar {
@@ -60,12 +61,12 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 500px;
 }
 
 
 .logo-small{
-  width:15vw;
+  width: 15vw;
 }
 
 
