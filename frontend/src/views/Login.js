@@ -44,26 +44,21 @@ function Login() {
             <div className="login_wrap">
                 <div className="logoBar"><a><img className="login_logo" src={PubConnectLarge}></img></a></div>
                 <div className="form">
-                    <Card className={classes.card}>
-                        <CardContent>
-                            <p>Thank you for participating in our PubConnect Testbed Survey! We suggest you complete the survey in one sitting because you may not be able to save your progress if you return at a later time.</p>
-                            <p><b>How the Survey Works</b> - The survey should take about 10 minutes to complete and has two short parts: We identify you in Microsoft Academic by whatever name(s) you have published under. We show a list of papers that you have written since 2011*; you select the testbed(s) used in the research that led you to write the paper.</p>
-                            <p>*The year the first of these testbeds were introduced.</p>
-                            <hr />
-                            <p><b>Thank you!</b> -
-                            By completing the survey, we would like to offer you a token of our appreciation! You will automatically be entered into a raffle to win Amazon gift cards and the opportunity to be a <a href="https://www.whatisfabric.net/">FABRIC beta tester</a>, and If you are listed multiple times in Microsoft Academic, we give you the opportunity to combine the names you’ve published under into a single Microsoft Academic listing at the end of the survey.</p>
-                        </CardContent>
-                    </Card>
-                    <p><b>Getting Started</b> -
-                Please enter your full name in the fields below. If you have published under more than one name, please click the + button to add those other names.</p>
-                    <div id="username_group">
-                        {/* <div className="login_namefield"><TextField variant="outlined" className={classes.input} label="Email" fullWidth="true" placeholder="john.doe@gmail.com" onChange={(e) => { setEmail(e.target.value) }}></TextField></div> */}
+                    <div className="form-text">
+                        <p>Thank you for participating in our PubConnect Testbed Survey!</p>
+                        <div>The survey should take about <b>10 minutes</b> to complete and has two short parts:
+                            <p>1) We identify you in Microsoft Academic by whatever name(s) you have published under. </p>
+                            <p>2) Then we show you all the papers listed for you in Microsoft Academic and ask you to select the testbed(s) used in that research.</p></div>
+                    </div>
+                    <div className="form-action">
+                        <div>Enter your first and last name in the fields below. If you have published under more than one name, please click the + button to add those other names.</div>
+                        <div className="form-action-input">
                         {usernames.map((username, index) =>
-                            <div key="index" className="login_namefield"><TextField variant="outlined" label="First Last Name" fullWidth="true" className={classes.input} value={username} placeholder="John Doe" onChange={(e) => {
+                            <div key="index" className="login_namefield"><TextField variant="outlined" label="Name" fullWidth="true" className={classes.input} value={username} placeholder="John Doe" onChange={(e) => {
                                 let newArray = usernames.slice();
                                 newArray[index] = e.target.value;
                                 setUserNames(newArray);
-                            }}></TextField>{index === 0 ? <span /> : <ToggleButton size="small" onClick={() => removeNameField(index)}><ClearIcon /></ToggleButton>}</div>)}
+                            }}></TextField>{index === 0 ? <span /> : <ToggleButton size="small" onClick={() => removeNameField(index)}><ClearIcon /></ToggleButton>}</div>)}</div>
                         <br />
                         <div><ToggleButton size="small" className="toggle_addName" onClick={addNameField}><AddIcon /></ToggleButton> Add another name you have published under</div>
                         <br />
