@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles } from '@material-ui/core';
 import '../App.css';
-import PubConnectSmall from '../PC-small.png';
+import { Prizes } from '../components/prizes';
+import PubConnectLarge from '../PC-large.png'
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -10,40 +11,59 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        width: '800px'
     },
     btn: {
         marginTop: 20
     },
-    card: {
-        backgroundColor: '#00758d',
-        color: 'white',
-        width: '700px'
+    heading: {
+        textAlign: 'center'
+    },
+    indented: {
+        padding: '0 20px'
     }
 }))
+
+function reviver(key, value) {
+    if(typeof value === 'object' && value !== null) {
+      if (value.dataType === 'Map') {
+        return new Map(value.value);
+      }
+    }
+    return value;
+  }
 
 function Submit(props) {
     const classes = useStyles();
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
-
+    const userName = JSON.parse(sessionStorage.getItem('login'));
+    const nameMap = JSON.parse(sessionStorage.getItem('nameMap'), reviver);
     return (
-        <div className={classes.container}>
-            <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
-            <Card className={classes.card}><CardContent>Thank you so much for taking the time to complete this survey!
-        <hr />
-                <p><b>You are entered into the raffle!</b></p>
-                <p>Participation Prize: The first 175 people to complete the survey will earn a  Sticker </p>
-                <p>Second Prize: 6 participants will win a $25 Amazon gift card</p>
-                <p>First Prize: 3 participants will win a $50 Amazon gift card</p>
-                <p>Grand Prize: 10 participants will win the opportunity to be a  FABRIC beta tester</p>
+        <div className="wrapper">
+            <div className={classes.container}>
+                <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
                 <br />
-                <p>Want to earn more opportunities to win? Check out your options <a href="https://gleam.io/">here</a>.</p>
-            </CardContent></Card>
-            <br />
-            <Typography>We found {userIDs.length} names for you in Microsoft Academic.</Typography>
-            { userIDs.map(id => <Typography>ID: {id[0]}</Typography>)}
-            <br />
-            <Typography>Visit <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D">this page</a> for more information on how to set-up your Microsoft Academic profile page.</Typography>
+                <div><h2 className={classes.heading}>Thank you so much for completing the survey!</h2>
+                    <div>
+                        <Typography>Here are the listings we found for you in Microsoft Academic:</Typography>
+                        <br />
+                        <div className={classes.indented}>
+                            {userIDs.map(id => <Typography>{nameMap.get(id[0])} <a>{id[0]}</a></Typography>)}
+                        </div>
+                        <br />
+                        <Typography>If you’d like to learn more about creating a profile page in Academic, here is a <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D" target="_blank">blog post</a> that shows you how.</Typography>
+                    </div>
+                    <p><b>You are entered into the raffle!</b></p>
+                    <div className={classes.indented}>
+                        <Prizes />
+                    </div>
+                    <br />
+                </div>
+                <p className="submit-more">You can gain additional raffle tickets by completing other tasks such as referring  someone else to take the survey. Want to learn more? Then visit our <a href="https://gleam.io/" target="_blank">Gleam.io</a> page for other opportunities to win!
+</p>
+                <br />
+            </div>
         </div>
     )
 }

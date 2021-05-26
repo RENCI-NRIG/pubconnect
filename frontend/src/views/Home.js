@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReplayIcon from '@material-ui/icons/Replay';
-import PubConnectSmall from '../PC-small.png';
+import PubConnectLarge from '../PC-large.png';
 import { Link } from '@reach/router';
 import '../App.css';
 import { capitalizeFirstLetter } from '../helper/format';
@@ -12,7 +12,8 @@ const useStyles = makeStyles((theme) => ({
     card: {
         margin: theme.spacing(2),
         backgroundColor: '#d9d9d9',
-        width: '50%'
+        width: '50%',
+        cursor: 'pointer'
     },
     link_button: {
         margin: theme.spacing(2),
@@ -32,6 +33,7 @@ function Home(props) {
     }
     let counter = 0;
     const classes = useStyles();
+    const [nameMap, setNameMap] = useState();
     const [isLoading, setLoading] = useState(true);
     const [authorIDArray, setAuthorIDArray] = useState([]);
     const [authorArticle, setAuthorArticle] = useState([]);
@@ -57,6 +59,7 @@ function Home(props) {
 
     useEffect(async () => {
         let tem = [];
+        let tem_NameMap = new Map();
         for await (let i of userInfo[0]) {
             let lowerCaseName = i.toLowerCase();
             axios({
@@ -64,16 +67,18 @@ function Home(props) {
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                 params: {
                     expr: `Composite(AA.AuN=='${lowerCaseName}')`,
-                    attributes: 'AA.AuId,AA.AuN',
+                    attributes: 'AA.AuId,AA.AuN,AA.DAuN',
                     'subscription-key': 'f6714001211242e982d92a3646ececed',
                     count: 100
                 }
             }).then(res => {
+                console.log(res.data.entities);
                 let ids = new Set();
                 for (let article in res.data.entities) {
                     for (let author in res.data.entities[article].AA) {
                         if (res.data.entities[article].AA[author].AuN == lowerCaseName) {
                             ids.add(res.data.entities[article].AA[author].AuId);
+                            tem_NameMap.set(res.data.entities[article].AA[author].AuId, res.data.entities[article].AA[author].DAuN)
                         }
                     }
                 }
@@ -82,6 +87,7 @@ function Home(props) {
                     let newArray = Array.prototype.concat.apply([], tem);
                     newArray.sort();
                     setAuthorIDArray(newArray);
+                    setNameMap(tem_NameMap);
                 }
             }).catch(e => {
                 console.log(e);
@@ -150,13 +156,9 @@ function Home(props) {
 
     return (
         <div class="container">
-            <div className="logoBar"><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
+            <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
             <Typography><Link className="clean-button" to='/'><Button variant="outlined" color="primary" onClick={() => sessionStorage.clear()}><ReplayIcon />Start Over</Button></Link></Typography>
-            <div className="home_text"><p>Based on the name(s) you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select those papers below that are, in fact, authored by you.</p>
-
-                <p> Once you complete this step, we confirm which Microsoft Academic IDs are yours and then we will show you a listing of all the papers listed in Microsoft Academic that you have written since 2011.</p>
-
-                <i>At the end of the survey, we will provide you with a link(s) to your paper listings in Microsoft Academic. If you have more than one listing because Microsoft Academic shows more than one name for you, we will provide you with some brief instructions on how to merge your identities in Microsoft Academic if you would like to do so.</i>
+            <div className="home_text"><p>Based on the name(s) you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select the papers below that you authored.</p>
             </div>
             <div class="home_card_container">
                 {authorArticle.map(this_author => <Card className={classes.card}>
@@ -164,7 +166,7 @@ function Home(props) {
                         <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography><i>{capitalizeFirstLetter(this_author[2].Ti)}</i></Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
                 </Card>)}
             </div>
-            <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray, userInfo: userInfo }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>
+            <Link className={classes.link_button} to="/verify" state={{ checkedArray: checkedArray, userInfo: userInfo, nameMap: nameMap }}><Button fullWidth variant="outlined" color="primary">Continue</Button></Link>
 
         </div>
     )

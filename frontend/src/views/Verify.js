@@ -5,13 +5,15 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles, FormHelperText } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
-import PubConnectSmall from '../PC-small.png';
+import PubConnectLarge from '../PC-large.png'
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 import '../App.css';
 
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        width: '100%',
+        width: '1200px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -47,8 +49,30 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         backgroundColor: '#d9d9d9'
+    },
+    authors: {
+        maxWidth: '700px',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden'
+    },
+    noMaxWidth: {
+        maxWidth: 'none',
+        fontSize: 12,
+        float: 'left'
     }
 }))
+
+function replacer(key, value) {
+    if (value instanceof Map) {
+        return {
+            dataType: 'Map',
+            value: Array.from(value.entries()), // or with spread: value: [...value]
+        };
+    } else {
+        return value;
+    }
+}
 
 function Verify(props) {
     let checkedInfo;
@@ -62,8 +86,9 @@ function Verify(props) {
     }
     else {
         checkedInfo = props.location.state.checkedArray;
-        console.log(checkedInfo)
+        console.log(props.location)
         sessionStorage.setItem('home', JSON.stringify(checkedInfo));
+        sessionStorage.setItem('nameMap', JSON.stringify(props.location.state.nameMap, replacer))
     }
     const currUser = checkedInfo;
     const classes = useStyles();
@@ -102,7 +127,7 @@ function Verify(props) {
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                 params: {
                     expr: `And(Composite(AA.AuId=${currAuthorID}), Y>=2011)`,
-                    attributes: 'Y,AA.AuId,AA.AuN,Id,DOI,Ti,VFN',
+                    attributes: 'Y,AA.AuId,AA.DAuN,Id,DOI,DN,VFN',
                     'subscription-key': 'f6714001211242e982d92a3646ececed',
                     count: 1000
                 }
@@ -116,14 +141,14 @@ function Verify(props) {
                 tem = tem.concat(res.data.entities);
                 if (index == currUser.length - 1) {
                     tem.forEach(paper => {
-                        if (!namelist.includes(paper.Ti)) {
+                        if (!namelist.includes(paper.DN)) {
                             // find the first item in a year, give a first field
                             if (!years.includes(paper.Y)) {
                                 paper['firstItemInYear'] = true;
                                 years.push(paper.Y);
                             }
                             filteredArray.push(paper);
-                            namelist.push(paper.Ti);
+                            namelist.push(paper.DN);
                             tem_checklist[paper.Id] = [false, false, false, true];
                             tem_results[paper.Id] = paper;
                         }
@@ -162,7 +187,7 @@ function Verify(props) {
         let authorList = "";
         for (let id in authors) {
             if (authorList !== '') authorList += ", "
-            authorList += capitalizeAuthorName(authors[id].AuN)
+            authorList += authors[id].DAuN
         }
         return authorList;
     }
@@ -215,9 +240,9 @@ function Verify(props) {
 
     return (
         <Container className={classes.container}>
-            <div className="logoBar"> <div className="verify_back_button"><Link className="clean-button" to='/home'><Button variant="outlined" color="primary"><ArrowBackIcon />Go Back</Button></Link></div><a><img className="logo-small" src={PubConnectSmall}></img></a></div>
+            <div className="logoBar"> <div className="verify_back_button"><Link className="clean-button" to='/home'><Button variant="outlined" color="primary"><ArrowBackIcon />Go Back</Button></Link></div><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
             <br />
-            {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the name(s) you gave us at the start of the survey, we have pulled all the papers listed in Microsoft Academic that you have authored since 2011. Please select the testbed(s) that were used in the research about which the paper reports. By default, None (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
+            {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the paper(s) you selected, we’ve found all papers listed for you in Microsoft Academic. For each paper, please select any testbeds you used conducting the research.  By default, <b>None</b> (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
             <br />
             <Table>
                 <TableHead>
@@ -231,10 +256,10 @@ function Verify(props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {currPaper.map((paper, index) => <TableRow key={paper.Ti}>{
+                    {currPaper.map((paper, index) => <TableRow key={paper.DN}>{
                         paper.firstItemInYear || index === 0 ? <TableCell classes={{ root: classes.root }}><Typography className={classes.firstItemInYear}><b>{paper.Y}</b></Typography></TableCell> : <span></span>
                     }
-                        <TableCell><div><Typography><i>{capitalizeFirstLetter(paper.Ti)}</i></Typography><Typography>{renderAuthorList(paper.AA)}</Typography><Typography>{paper.VFN}</Typography></div></TableCell>
+                        <TableCell><div><Typography><b><i>{paper.DN}</i></b></Typography><Tooltip title={renderAuthorList(paper.AA)} placement="bottom-start" classes={{ tooltip: classes.noMaxWidth }}><Typography className={classes.authors}>{renderAuthorList(paper.AA)}</Typography></Tooltip><Typography>{paper.VFN}</Typography></div></TableCell>
                         <TableCell><Checkbox checked={checkedList[paper.Id][0]} onChange={() => handleCheckBox(paper.Id, 0)}></Checkbox></TableCell>
                         <TableCell><Checkbox checked={checkedList[paper.Id][1]} onChange={() => handleCheckBox(paper.Id, 1)}></Checkbox></TableCell>
                         <TableCell><Checkbox checked={checkedList[paper.Id][2]} onChange={() => handleCheckBox(paper.Id, 2)}></Checkbox></TableCell>
@@ -243,11 +268,11 @@ function Verify(props) {
                 </TableBody>
             </Table>
             <Dialog open={submitForm} onClose={() => setSubmitForm(false)}>
-                <DialogContent>Are you sure to submit your survey?</DialogContent>
-                <DialogActions><Button color="primary" onClick={handleDataSubmit}>Yes</Button><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button></DialogActions>
+                <DialogContent>Are you sure you want to submit your survey?</DialogContent>
+                <DialogActions><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button><Button color="primary" onClick={handleDataSubmit}>Yes</Button></DialogActions>
             </Dialog>
             <div className={classes.buttonContainer}>
-                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Next</Button></div>}
+                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Save and Continue</Button></div>}
             </div>
         </Container>
     )
