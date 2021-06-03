@@ -26,13 +26,13 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function reviver(key, value) {
-    if(typeof value === 'object' && value !== null) {
-      if (value.dataType === 'Map') {
-        return new Map(value.value);
-      }
+    if (typeof value === 'object' && value !== null) {
+        if (value.dataType === 'Map') {
+            return new Map(value.value);
+        }
     }
     return value;
-  }
+}
 
 function Submit(props) {
     const classes = useStyles();
@@ -49,7 +49,9 @@ function Submit(props) {
                         <Typography>Here are the listings we found for you in Microsoft Academic:</Typography>
                         <br />
                         <div className={classes.indented}>
-                            {userIDs.map(id => <Typography><a href={`http://academic.microsoft.com/author/${id[0]}`} target="_blank">{nameMap.get(id[0])}</a></Typography>)}
+                            <ul>
+                                {userIDs.map(id => <li><a href={`http://academic.microsoft.com/author/${id[0]}`} target="_blank">{nameMap.get(id[0])}</a></li>)}
+                            </ul>
                         </div>
                         <br />
                         <Typography>If you’d like to learn more about creating a profile page in Academic, here is a <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D" target="_blank">blog post</a> that shows you how.</Typography>

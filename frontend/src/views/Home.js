@@ -161,8 +161,8 @@ function Home(props) {
             <div className="home_text"><p>Based on the name(s) you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select the papers below that you authored.</p>
             </div>
             <div class="home_card_container">
-                {authorArticle.map(this_author => <Card className={classes.card}>
-                    <CardContent><Checkbox checked={checkIfInArray(checkedArray, this_author) !== -1} onClick={() => { handleCheckBox(this_author) }}></Checkbox>
+                {authorArticle.map(this_author => <Card className={classes.card} onClick={() => { handleCheckBox(this_author) }}>
+                    <CardContent><Checkbox checked={checkIfInArray(checkedArray, this_author) !== -1}></Checkbox>
                         <Typography>{renderAuthorList(this_author[2].AA)}</Typography><Typography><i>{capitalizeFirstLetter(this_author[2].Ti)}</i></Typography><Typography>{this_author[2].VFN == undefined ? "" : this_author[2].VFN + ", "}{this_author[2].Y}</Typography></CardContent>
                 </Card>)}
             </div>
