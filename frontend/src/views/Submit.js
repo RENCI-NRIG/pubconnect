@@ -67,7 +67,7 @@ function Submit(props) {
                     <div className={classes.indented}>
                         <ul>
                             {Object.keys(renderNameID).map(name => <li>{name} (
-                                {renderNameID[name].map((id, index) => <a href={`http://academic.microsoft.com/author/${id}`} target="_blank">{index > 0 ? ', ' : ''}{index + 1}</a>)}
+                                {renderNameID[name].map((id, index) => <span>{index > 0 ? ', ' : ''}<a href={`http://academic.microsoft.com/author/${id}`} target="_blank">{index + 1}</a></span>)}
 
                             )</li>)}
                         </ul>
