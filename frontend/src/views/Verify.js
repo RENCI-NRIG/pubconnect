@@ -225,24 +225,24 @@ function Verify(props) {
 
     const handleDataSubmit = () => {
         navigate('/submit', { replace: true })
-        // results['checklist'] = checkedList;
-        // axios({
-        //     url: `${baseUrl}:5000/insert`,
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     data: JSON.stringify(results)
-        // }).then(res => {
-        //     navigate('/submit', { replace: true })
-        // }).catch(e => console.log(e))
+        results['checklist'] = checkedList;
+        axios({
+            url: `${baseUrl}:5000/insert`,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(results)
+        }).then(res => {
+            navigate('/submit', { replace: true })
+        }).catch(e => console.log(e))
     }
 
     return (
         <Container className={classes.container}>
             <div className="logoBar"> <div className="verify_back_button"><Link className="clean-button" to='/home'><Button variant="outlined" color="primary"><ArrowBackIcon />Go Back</Button></Link></div><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
             <br />
-            {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the paper(s) you selected, we’ve found all papers listed for you in Microsoft Academic. For each paper, please select any testbeds you used conducting the research.  By default, <b>None</b> (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
+            {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the paper(s) you selected, we've found all other papers of yours listed in Microsoft Academic. For each paper, please select any testbeds you used to conduct the research. By default, <b>None</b> (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
             <br />
             <Table>
                 <TableHead>
