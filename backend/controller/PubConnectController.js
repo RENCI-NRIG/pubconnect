@@ -1,12 +1,48 @@
 const { response } = require('express');
 const { connection } = require('../config/db');
 
+const PubConnectSaveUser = async (props) => {
+    console.log(props.userInfo)
+    for (let i = 0; i < props.checkedArray.length; i++) {
+        let this_id = props['userInfo'][1];
+        const _institutionSQL = `INSERT IGNORE INTO affiliation(institution_name) VALUES ('${props.checkedArray[i][1]}')`
+        const institution_result = await connection.query(_institutionSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into institution`)
+        })
+        const _authorSQL = `INSERT IGNORE INTO author(ms_author_id) VALUES ('${props.checkedArray[i][0]}')`
+        const author_result = await connection.query(_authorSQL, function (err, result) {
+            if (err) throw err;
+            console.log(`inserted into author`)
+        })
+        // const _authorAffiliationSQL = `INSERT IGNORE INTO author_affiliation(author_id, institution_id) VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), (SELECT institution_id FROM affiliation WHERE institution_name='${props.checkedArray[i][1]}'))`
+        // await connection.query(_authorAffiliationSQL, function (err, result) {
+        //     if (err) throw err;
+        //     console.log(`inserted into author affiliation`)
+        // })
+
+        // const _authorMSidSQL = `INSERT IGNORE INTO author_id VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), '${props.checkedArray[i][0]}')`
+        // await connection.query(_authorMSidSQL, function (err, result) {
+        //     if (err) throw err;
+        //     console.log(`inserted into author author_msid`)
+        // })
+        // if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
+        //     console.log("inserted")
+        // }
+    }
+}
+
 exports.PubConnectInsert = async function (req, res) {
+    console.log("insert into database")
     const props = req.body;
+    const db_id = await PubConnectSaveUser(props);
     for (let i = 0; i < Object.keys(props.checklist).length; i++) {
         const this_id = Object.keys(props.checklist)[i];
         if (props.checklist[this_id][3] === false) {
             const _checkSQL = `SELECT * FROM paper WHERE ms_paper_id = ${props[this_id].Id}`;
+            // const author_id = await connection.query(`SELECT author_id FROM author WHERE ms_author_id='${props[this_id].Id}'`, function (err, result) {
+            //     console.log(result);
+            // })
             await connection.query(_checkSQL, async function (err, result) {
                 if (err) throw err;
                 if (result.length === 0) {
@@ -44,36 +80,6 @@ exports.PubConnectInsert = async function (req, res) {
         }
         if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
             res.send({ 'message': 'Data operation complete.' })
-        }
-    }
-}
-
-exports.PubConnectSaveUser = async function (req, res) {
-    const props = req.body;
-    for (let i = 0; i < props.checkedArray.length; i++) {
-        const _institutionSQL = `INSERT IGNORE INTO affiliation(institution_name) VALUES ('${props.checkedArray[i][1]}')`
-        await connection.query(_institutionSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into institution`)
-        })
-        const _authorSQL = `INSERT IGNORE INTO author(email) VALUES ('${props['userInfo'][1]}')`
-        await connection.query(_authorSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into author`)
-        })
-        const _authorAffiliationSQL = `INSERT IGNORE INTO author_affiliation(author_id, institution_id) VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), (SELECT institution_id FROM affiliation WHERE institution_name='${props.checkedArray[i][1]}'))`
-        await connection.query(_authorAffiliationSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into author affiliation`)
-        })
-
-        const _authorMSidSQL = `INSERT IGNORE INTO author_id VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), '${props.checkedArray[i][0]}')`
-        await connection.query(_authorMSidSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into author author_msid`)
-        })
-        if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
-            res.send({ 'message': 'Data inserted into database.' })
         }
     }
 }

@@ -224,8 +224,9 @@ function Verify(props) {
     }
 
     const handleDataSubmit = () => {
-        navigate('/submit', { replace: true })
         results['checklist'] = checkedList;
+        results['checkedArray'] = props.location.state.checkedArray;
+        results['userInfo'] = props.location.state.userInfo
         axios({
             url: `${baseUrl}:5000/insert`,
             method: 'POST',
@@ -234,6 +235,7 @@ function Verify(props) {
             },
             data: JSON.stringify(results)
         }).then(res => {
+            console.log(res.data)
             navigate('/submit', { replace: true })
         }).catch(e => console.log(e))
     }

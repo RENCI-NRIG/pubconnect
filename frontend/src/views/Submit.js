@@ -50,7 +50,6 @@ function Submit(props) {
             renderNameID[nameMap.get(id[0])] = newIDList;
         }
         else {
-            console.log(renderNameID)
             let oldIDList = renderNameID[nameMap.get(id[0])];
             oldIDList.push(id[0]);
         }
