@@ -61,7 +61,7 @@ function Submit(props) {
                 <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
                 <br />
                 <img className="submit-thank-logo" src={ThankYouLogo} />
-                <div>
+                {/* <div>
                     <br />
                     <Typography>Here are the named entries we found for you in Microsoft Academic:</Typography>
                     <div className={classes.indented}>
@@ -74,7 +74,7 @@ function Submit(props) {
                     </div>
                     <br />
                     <Typography>If you’d like to learn more about creating a profile page in Academic, here is a <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D" target="_blank">blog post</a> that shows you how.</Typography>
-                </div>
+                </div> */}
                 <img className="submit-entered-logo" src={EnterPrizeLogo} />
                 <div className={classes.indented}>
                     <Prizes />
