@@ -1,85 +1,70 @@
-const { response } = require('express');
 const { connection } = require('../config/db');
 
 const PubConnectSaveUser = async (props) => {
-    console.log(props.userInfo)
-    for (let i = 0; i < props.checkedArray.length; i++) {
-        let this_id = props['userInfo'][1];
-        const _institutionSQL = `INSERT IGNORE INTO affiliation(institution_name) VALUES ('${props.checkedArray[i][1]}')`
-        const institution_result = await connection.query(_institutionSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into institution`)
-        })
-        const _authorSQL = `INSERT IGNORE INTO author(ms_author_id) VALUES ('${props.checkedArray[i][0]}')`
-        const author_result = await connection.query(_authorSQL, function (err, result) {
-            if (err) throw err;
-            console.log(`inserted into author`)
-        })
-        // const _authorAffiliationSQL = `INSERT IGNORE INTO author_affiliation(author_id, institution_id) VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), (SELECT institution_id FROM affiliation WHERE institution_name='${props.checkedArray[i][1]}'))`
-        // await connection.query(_authorAffiliationSQL, function (err, result) {
-        //     if (err) throw err;
-        //     console.log(`inserted into author affiliation`)
-        // })
-
-        // const _authorMSidSQL = `INSERT IGNORE INTO author_id VALUES ((SELECT author_id FROM author WHERE email='${props['userInfo'][1]}'), '${props.checkedArray[i][0]}')`
-        // await connection.query(_authorMSidSQL, function (err, result) {
-        //     if (err) throw err;
-        //     console.log(`inserted into author author_msid`)
-        // })
-        // if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
-        //     console.log("inserted")
-        // }
+    const userInfo = props.checkedArray;
+    let author_id = -1;
+    let _authorSQL = `INSERT IGNORE INTO author(created_date) VALUES ('${new Date().toUTCString()}')`
+    const [rows, fields] = await connection.promise().query(_authorSQL);
+    author_id = rows.insertId;
+    console.log(`${author_id} is created`)
+    for (let i = 0; i < userInfo.length; i++) {
+        console.log(`processing ${userInfo[i][0]}`)
+        let _authorIDSQL = `INSERT IGNORE INTO author_id(author_id, ms_author_id) VALUES ('${author_id}','${userInfo[i][0]}')`
+        const author_result = await connection.promise().query(_authorIDSQL);
+        console.log(`${userInfo[i][0]} inserted into author_id table`)
+        if (userInfo[i][1] !== null) {
+            const _institutionSQL = `INSERT IGNORE INTO affiliation(institution_name) VALUES ('${userInfo[i][1]}')`
+            const [_institutionSQL_rows, _institutionSQL_fields] = await connection.promise().query(_institutionSQL)
+            const _authorAffiliationSQL = `INSERT IGNORE INTO author_affiliation(author_id, institution_id) VALUES ('${author_id}', (SELECT institution_id FROM affiliation WHERE institution_name='${userInfo[i][1]}'))`
+            await connection.promise().query(_authorAffiliationSQL)
+            console.log(`inserted into author affiliation table`)
+        }
+        if (i === userInfo.length - 1) {
+            return author_id;
+        }
     }
 }
 
 exports.PubConnectInsert = async function (req, res) {
     console.log("insert into database")
     const props = req.body;
-    const db_id = await PubConnectSaveUser(props);
+    const user_id = await PubConnectSaveUser(props);
     for (let i = 0; i < Object.keys(props.checklist).length; i++) {
         const this_id = Object.keys(props.checklist)[i];
         if (props.checklist[this_id][3] === false) {
             const _checkSQL = `SELECT * FROM paper WHERE ms_paper_id = ${props[this_id].Id}`;
-            // const author_id = await connection.query(`SELECT author_id FROM author WHERE ms_author_id='${props[this_id].Id}'`, function (err, result) {
-            //     console.log(result);
-            // })
-            await connection.query(_checkSQL, async function (err, result) {
-                if (err) throw err;
-                if (result.length === 0) {
-                    const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}')`;
-                    await connection.query(_paperSQL, function (err, result) {
-                        if (err) throw err;
-                        console.log(`inserted into paper`)
-                    })
-                }
-                if (props.checklist[this_id][0] === true) {
-                    const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('1',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
-                    await connection.query(_testbedPaperSQL, function (err, result) {
-                        if (err) throw err;
-                        console.log(`inserted into geni`)
-                    })
-                }
-                if (props.checklist[this_id][1] === true) {
-                    const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('2',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
-                    await connection.query(_testbedPaperSQL, function (err, result) {
-                        if (err) throw err;
-                        console.log(`inserted into cloudtop`)
-                    })
-                }
-                if (props.checklist[this_id][2] === true) {
-                    const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('3',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
-                    await connection.query(_testbedPaperSQL, function (err, result) {
-                        if (err) throw err;
-                        console.log(`inserted into chameleon`)
-                    })
-                }
-            })
+            const [paperRows, paperFields] = await connection.promise().query(_checkSQL);
+            let this_paper_id;
+            if (paperRows.length === 0) {
+                const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}')`;
+                const [newPaperRows, newPaperFields] = await connection.promise().query(_paperSQL)
+                console.log(`inserted into paper`)
+                this_paper_id = newPaperRows.insertId;
+            } else this_paper_id = paperRows[0]['paper_id'];
+            const _authorPaperSQL = `INSERT INTO author_papers VALUES ('${user_id}', '${this_paper_id}')`;
+            await connection.promise().query(_authorPaperSQL);
+            console.log(`inserted into author paper table`);
+            if (props.checklist[this_id][0] === true) {
+                const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('1',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
+                await connection.promise().query(_testbedPaperSQL);
+                console.log(`inserted into geni`);
+            }
+            if (props.checklist[this_id][1] === true) {
+                const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('2',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
+                await connection.promise().query(_testbedPaperSQL)
+                console.log(`inserted into cloudtop`)
+            }
+            if (props.checklist[this_id][2] === true) {
+                const _testbedPaperSQL = `INSERT INTO testbed_papers VALUES ('3',(SELECT paper_id FROM paper WHERE ms_paper_id='${props[this_id].Id}')) ON DUPLICATE KEY UPDATE testbed_id=VALUES(testbed_id)`;
+                await connection.promise().query(_testbedPaperSQL)
+                console.log(`inserted into chameleon`)
+            }
             if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
-                res.send({ 'message': 'Data inserted into database.' })
+                res.send({ 'message': 'Success' })
             }
         }
         if (this_id === Object.keys(props.checklist)[Object.keys(props.checklist).length - 1]) {
-            res.send({ 'message': 'Data operation complete.' })
+            res.send({ 'message': 'Success' })
         }
     }
 }

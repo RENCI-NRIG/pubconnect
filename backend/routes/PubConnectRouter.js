@@ -6,7 +6,6 @@ PubConnectRouter.get('/', (req) => {
     console.log("test")
 })
 
-PubConnectRouter.post('/insert', PubConnectController.PubConnectInsert)
-
+PubConnectRouter.post('/insert', PubConnectController.PubConnectInsert);
 
 module.exports = PubConnectRouter
