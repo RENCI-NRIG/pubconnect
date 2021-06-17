@@ -229,7 +229,7 @@ function Verify(props) {
         results['userInfo'] = props.location.state.userInfo
 
         const insert_result = await axios({
-            url: `http://localhost:5000/insert`,
+            url: `${baseUrl}:5000/insert`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
