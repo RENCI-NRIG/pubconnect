@@ -223,20 +223,21 @@ function Verify(props) {
         sessionStorage.setItem('checklist', JSON.stringify(newCheckList));
     }
 
-    const handleDataSubmit = () => {
+    const handleDataSubmit = async () => {
         results['checklist'] = checkedList;
         results['checkedArray'] = props.location.state.checkedArray;
         results['userInfo'] = props.location.state.userInfo
-        axios({
-            url: `${baseUrl}:5000/insert`,
+
+        const insert_result = await axios({
+            url: `http://localhost:5000/insert`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             data: JSON.stringify(results)
         }).then(res => {
-            console.log(res.data)
-            navigate('/submit', { replace: true })
+            if(res.data.message === 'Success') navigate('/submit', { replace: true })
+            else alert('Error has occurred, please try again.')
         }).catch(e => console.log(e))
     }
 
