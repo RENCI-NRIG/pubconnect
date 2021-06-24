@@ -1,10 +1,13 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
+const connection_pool = mysql.createPool({
   host: 'pub-connect_db_1',
   user: 'user',
   password: 'password',
-  database: 'db'
+  database: 'db',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 })
 
 const initializeDB = () => {
@@ -21,19 +24,19 @@ const initializeDB = () => {
   const testbedPaperDB_sql = 'CREATE TABLE IF NOT EXISTS testbed_papers (testbed_id int NOT NULL, paper_id int NOT NULL, FOREIGN KEY(testbed_id) REFERENCES testbed(testbed_id), FOREIGN KEY(paper_id) REFERENCES paper(paper_id), UNIQUE(testbed_id, paper_id))';
   const arrays = [affiliationDB_sql, authorDB_sql, authoridDB_sql, paperDB_sql, testbedDB_sql, authorAffiliationDB_sql, authorPapersDB_sql, testbedPaperDB_sql, GENISetup, CloudlabSetup, ChameleonSetup];
 
-  connection.connect(function (err) {
-    if (err) throw err;
+  // connection_pool.connect(function (err) {
+  //   if (err) throw err;
     console.log("Connected to host pub-connect_db_1");
     arrays.forEach(query => {
-      connection.query(query, function (err, result) {
+      connection_pool.query(query, function (err, result) {
         if (err) throw err;
         console.log(`database created`)
       })
     })
-  });
+  // });
 }
 
 module.exports = {
-  connection,
+  connection_pool,
   initializeDB
 }
