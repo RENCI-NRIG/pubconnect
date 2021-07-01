@@ -2,8 +2,8 @@ const mysql = require('mysql2');
 
 const connection_pool = mysql.createPool({
   host: 'pub-connect_db_1',
-  user: 'user',
-  password: 'password',
+  user: 'pfeffa',
+  password: 'goawayyouevilhackeryou',
   database: 'db',
   waitForConnections: true,
   connectionLimit: 10,
