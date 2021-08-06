@@ -15,10 +15,10 @@ services:
     image: mysql:5.7
     restart: always
     environment:
-      MYSQL_DATABASE: 'db'
-      MYSQL_USER: 'pfeffa'
-      MYSQL_PASSWORD: 'goawayyouevilhackeryou'
-      MYSQL_ROOT_PASSWORD: 'goawayyouevilhackeryou'
+      MYSQL_DATABASE: ''
+      MYSQL_USER: ''
+      MYSQL_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: ''
     ports:
       - '3306:3306'
     expose:
