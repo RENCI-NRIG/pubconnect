@@ -1,9 +1,11 @@
 const { connection_pool } = require('../config/db');
+const Cite = require('citation-js');
 
 const PubConnectSaveUser = async (props) => {
+    const userInputName = props.userInfo[0];
     const userInfo = props.checkedArray;
     let author_id = -1;
-    let _authorSQL = `INSERT IGNORE INTO author(created_date) VALUES ('${new Date().toUTCString()}')`
+    let _authorSQL = `INSERT IGNORE INTO author(created_date, author_name) VALUES ('${new Date().toUTCString()}', '${userInputName}')`
     const [rows, fields] = await connection_pool.promise().query(_authorSQL);
     author_id = rows.insertId;
     console.log(`${author_id} is created`)
@@ -36,7 +38,11 @@ exports.PubConnectInsert = async function (req, res) {
             const [paperRows, paperFields] = await connection_pool.promise().query(_checkSQL);
             let this_paper_id;
             if (paperRows.length === 0) {
-                const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}')`;
+                let paper_citation = Cite(props[this_id].DOI);
+                let citation_output = paper_citation.format('bibliography', {
+                    type: 'string'
+                  })
+                const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi, paper_citation) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}', '${citation_output}')`;
                 const [newPaperRows, newPaperFields] = await connection_pool.promise().query(_paperSQL)
                 console.log(`inserted into paper`)
                 this_paper_id = newPaperRows.insertId;

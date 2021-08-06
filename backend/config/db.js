@@ -11,9 +11,9 @@ const connection_pool = mysql.createPool({
 })
 
 const initializeDB = () => {
-  const authorDB_sql = 'CREATE TABLE IF NOT EXISTS author( author_id int NOT NULL AUTO_INCREMENT, created_date varchar(255), PRIMARY KEY(author_id))';
+  const authorDB_sql = 'CREATE TABLE IF NOT EXISTS author( author_id int NOT NULL AUTO_INCREMENT, created_date varchar(255), author_name varchar(255),PRIMARY KEY(author_id))';
   const testbedDB_sql = 'CREATE TABLE IF NOT EXISTS testbed (testbed_id int NOT NULL AUTO_INCREMENT, testbed_name varchar(255) UNIQUE, PRIMARY KEY(testbed_id))';
-  const paperDB_sql = 'CREATE TABLE IF NOT EXISTS paper ( paper_id int NOT NULL AUTO_INCREMENT, ms_paper_id varchar(255) NOT NULL UNIQUE, doi varchar(255), PRIMARY KEY(paper_id))';
+  const paperDB_sql = 'CREATE TABLE IF NOT EXISTS paper ( paper_id int NOT NULL AUTO_INCREMENT, ms_paper_id varchar(255) NOT NULL UNIQUE, doi varchar(255), paper_citation varchar(255), PRIMARY KEY(paper_id))';
   const affiliationDB_sql = 'CREATE TABLE IF NOT EXISTS affiliation ( institution_id int NOT NULL AUTO_INCREMENT, institution_name varchar(255) UNIQUE, PRIMARY KEY(institution_id))';
   const authorAffiliationDB_sql = 'CREATE TABLE IF NOT EXISTS author_affiliation (author_id int NOT NULL, institution_id int, FOREIGN KEY(author_id) REFERENCES author(author_id), FOREIGN KEY(institution_id) REFERENCES affiliation(institution_id), UNIQUE(author_id, institution_id))';
   const authoridDB_sql = 'CREATE TABLE IF NOT EXISTS author_id( author_id int NOT NULL, ms_author_id int, FOREIGN KEY(author_id) REFERENCES author(author_id), UNIQUE(author_id, ms_author_id))'
