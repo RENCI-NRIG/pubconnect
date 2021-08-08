@@ -106,7 +106,8 @@ function Verify(props) {
     const saveUser = () => {
         axios({
             method: 'POST',
-            url: `${baseUrl}:5000/save_user`,
+            // url: `${baseUrl}:5000/save_user`,
+            url: `${baseUrl}/save_user`,
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -229,7 +230,8 @@ function Verify(props) {
         results['userInfo'] = props.location.state.userInfo
 
         const insert_result = await axios({
-            url: `${baseUrl}:5000/insert`,
+            // url: `${baseUrl}:5000/insert`,
+            url: `${baseUrl}/insert`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
