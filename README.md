@@ -37,8 +37,8 @@ Verify running containers
 $ docker-compose ps
    Name                  Command               State                                   Ports
 -----------------------------------------------------------------------------------------------------------------------------
-pc-adminer    entrypoint.sh docker-php-e ...   Up      0.0.0.0:8080->8080/tcp,:::8080->8080/tcp
-pc-backend    npm start                        Up
+pc-adminer    entrypoint.sh docker-php-e ...   Up      8080/tcp
+pc-backend    npm start                        Up      5000/tcp
 pc-db         docker-entrypoint.sh mysqld      Up      3306/tcp, 33060/tcp
 pc-frontend   /docker-entrypoint.sh ngin ...   Up      80/tcp
 pc-nginx      /docker-entrypoint.sh ngin ...   Up      0.0.0.0:443->443/tcp,:::443->443/tcp, 0.0.0.0:80->80/tcp,:::80->80/tcp
@@ -83,7 +83,7 @@ After backend errors are resolved, navigate to the deployed URL and accept the s
 
 - For testing this is: [https://127.0.0.1/](https://127.0.0.1/)
 
-**NOTE**: The Adminer container uses http only and can be found at: [http://127.0.0.1:8080/](http://127.0.0.1:8080/)
+**NOTE**: The Adminer container runs under it's own slug at: [https://127.0.0.1/adminer](https://127.0.0.1/adminer)
 
 - Use credentials as set in `pubconnect.env`
 
