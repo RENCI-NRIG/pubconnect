@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from '@reach/router';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles, FormHelperText } from '@material-ui/core';
+import { Button, CircularProgress, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, makeStyles } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
+import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import PubConnectLarge from '../PC-large.png'
 import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
 import '../App.css';
 
 
@@ -60,6 +59,13 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 'none',
         fontSize: 12,
         float: 'left'
+    },
+    spinner: {
+        display: 'flex',
+        width: '100%',
+        height: '30px',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 }))
 
@@ -86,14 +92,13 @@ function Verify(props) {
     }
     else {
         checkedInfo = props.location.state.checkedArray;
-        console.log(props.location)
         sessionStorage.setItem('home', JSON.stringify(checkedInfo));
         sessionStorage.setItem('nameMap', JSON.stringify(props.location.state.nameMap, replacer))
     }
     const currUser = checkedInfo;
     const classes = useStyles();
     const [papers, setPaper] = useState([]);
-    const [authorID, setAuthorID] = useState();
+    const [isLoading, setLoading] = useState(false);
     const [currPaper, setCurrPaper] = useState([]);
     const [currPage, setCurrPage] = useState(1);
     const [currPageTotal, setPageTotal] = useState(0);
@@ -121,8 +126,6 @@ function Verify(props) {
         let tem_results = {};
         for (let index in currUser) {
             const currAuthorID = currUser[index][0];
-            console.log(currAuthorID)
-
             const result = await axios({
                 method: 'GET',
                 url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
@@ -195,17 +198,6 @@ function Verify(props) {
 
 
     const handlePageChange = (event, value) => {
-        // results['checklist'] = checkedList;
-        // results['email'] = props.location.state.userInfo[1];
-        // axios({
-        //     url: `${baseUrl}:5000/save`,
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     data: JSON.stringify(results)
-        // }).then(res => { })
-        //     .catch(e => console.log(e))
         setCurrPage(value);
     }
 
@@ -225,6 +217,7 @@ function Verify(props) {
     }
 
     const handleDataSubmit = async () => {
+        setLoading(true);
         results['checklist'] = checkedList;
         results['checkedArray'] = props.location.state.checkedArray;
         results['userInfo'] = props.location.state.userInfo
@@ -238,9 +231,13 @@ function Verify(props) {
             },
             data: JSON.stringify(results)
         }).then(res => {
-            if(res.data.message === 'Success') navigate('/submit', { replace: true })
+            setLoading(false)
+            if (res.data.message === 'Success') navigate('/submit', { replace: true })
             else alert('Error has occurred, please try again.')
-        }).catch(e => console.log(e))
+        }).catch(e => {
+            setLoading(false)
+            alert('Error has occurred, please try again.')
+        })
     }
 
     return (
@@ -274,7 +271,7 @@ function Verify(props) {
             </Table>
             <Dialog open={submitForm} onClose={() => setSubmitForm(false)}>
                 <DialogContent>Are you sure you want to submit your survey?</DialogContent>
-                <DialogActions><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button><Button color="primary" onClick={handleDataSubmit}>Yes</Button></DialogActions>
+                <DialogActions>{isLoading ? <div className={classes.spinner}><CircularProgress size={30} /></div> : <div><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button><Button color="primary" onClick={handleDataSubmit}>Yes</Button></div>}</DialogActions>
             </Dialog>
             <div className={classes.buttonContainer}>
                 <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Save and Continue</Button></div>}
