@@ -72,7 +72,6 @@ function Home(props) {
                     count: 100
                 }
             }).then(res => {
-                console.log(res.data.entities);
                 let ids = new Set();
                 for (let article in res.data.entities) {
                     for (let author in res.data.entities[article].AA) {
