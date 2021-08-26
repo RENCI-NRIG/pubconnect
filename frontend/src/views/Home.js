@@ -172,7 +172,7 @@ function Home(props) {
             <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
             <Typography><Link className="clean-button" to='/'><Button variant="outlined" color="primary" onClick={() => sessionStorage.clear()}><ReplayIcon />Start Over</Button></Link></Typography>
             {isLoading && <div className="home_info_container"><CircularProgress /></div>}
-            {error && <Typography className="home_info_container">Sorry we couldn't find any results.</Typography>}
+            {error && <Typography className="home_info_container">Sorry we couldn't find any results. Please try again.</Typography>}
             {!isLoading && !error &&
                 <Fragment>
                     <div className="home_text"><p>Based on the name(s) you provided, we have found <b>{authorArticle.length}</b> possible authors listed in Microsoft Academic that could be you. Please select the papers below that you authored.</p>
