@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { NotFound } from './NotFound';
 import { Link, useNavigate } from '@reach/router';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Button, CircularProgress, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, makeStyles } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
-import PubConnectLarge from '../PC-large.png'
+import PubConnectLarge from '../img/PC-large.png'
 import Tooltip from '@material-ui/core/Tooltip';
 import '../App.css';
+import { Fragment } from 'react';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -82,49 +84,26 @@ function replacer(key, value) {
 
 function Verify(props) {
     let checkedInfo;
-    if (props.location.state === null) {
-        if (sessionStorage.getItem('home') === null) {
-            navigate('/', { replace: true })
-        }
-        else {
-            checkedInfo = JSON.parse(sessionStorage.getItem('home'))
-        }
-    }
-    else {
-        checkedInfo = props.location.state.checkedArray;
-        sessionStorage.setItem('home', JSON.stringify(checkedInfo));
-        sessionStorage.setItem('nameMap', JSON.stringify(props.location.state.nameMap, replacer))
-    }
-    const currUser = checkedInfo;
+    let currUser;
+    const navigate = useNavigate();
     const classes = useStyles();
     const [papers, setPaper] = useState([]);
+    const [isSubmitting, setSubmitting] = useState(false);
     const [isLoading, setLoading] = useState(false);
-    const [currPaper, setCurrPaper] = useState([]);
+    const [error, setError] = useState(false);
+    const [currPaper, setCurrPaper] = useState();
     const [currPage, setCurrPage] = useState(1);
     const [currPageTotal, setPageTotal] = useState(0);
     const [checkedList, setCheckList] = useState({});
     const [results, setResults] = useState({});
     const [submitForm, setSubmitForm] = useState(false);
-    const navigate = useNavigate();
     const baseUrl = window.location.origin;
 
-    const saveUser = () => {
-        axios({
-            method: 'POST',
-            // url: `${baseUrl}:5000/save_user`,
-            url: `${baseUrl}/save_user`,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(props.location.state)
-        })
-    }
-
     useEffect(async () => {
-        // saveUser();
         let tem = [];
         let tem_results = {};
         for (let index in currUser) {
+            setLoading(true)
             const currAuthorID = currUser[index][0];
             const result = await axios({
                 method: 'GET',
@@ -136,9 +115,7 @@ function Verify(props) {
                     count: 1000
                 }
             }).then(res => {
-                let id = 0;
                 let years = [];
-                let fullYearPaper = {};
                 let namelist = [];
                 let filteredArray = [];
                 let tem_checklist = {};
@@ -165,9 +142,11 @@ function Verify(props) {
                     setPaper(filteredArray);
                     setCurrPaper(filteredArray.slice(0, 10));
                     setPageTotal(Math.ceil(filteredArray.length / 10))
+                    setLoading(false);
                 }
             }).catch(e => {
-                console.log(e);
+                setLoading(false)
+                setError(true)
             })
         }
     }, [])
@@ -178,14 +157,21 @@ function Verify(props) {
         }
     }, [currPage])
 
-    function capitalizeFirstLetter(s) {
-        return s[0].toUpperCase() + s.slice(1);
+    if (props.location.state === null) {
+        if (sessionStorage.getItem('home') === null) {
+            return <NotFound />
+        }
+        else {
+            checkedInfo = JSON.parse(sessionStorage.getItem('home'))
+        }
+    }
+    else {
+        checkedInfo = props.location.state.checkedArray;
+        sessionStorage.setItem('home', JSON.stringify(checkedInfo));
+        sessionStorage.setItem('nameMap', JSON.stringify(props.location.state.nameMap, replacer))
     }
 
-    function capitalizeAuthorName(s) {
-        s = capitalizeFirstLetter(s)
-        return s.replaceAll(/ [a-z]/g, z => z.toUpperCase());
-    }
+    currUser = checkedInfo;
 
     const renderAuthorList = authors => {
         let authorList = "";
@@ -217,7 +203,7 @@ function Verify(props) {
     }
 
     const handleDataSubmit = async () => {
-        setLoading(true);
+        setSubmitting(true);
         results['checklist'] = checkedList;
         results['checkedArray'] = props.location.state.checkedArray;
         results['userInfo'] = props.location.state.userInfo
@@ -231,11 +217,11 @@ function Verify(props) {
             },
             data: JSON.stringify(results)
         }).then(res => {
-            setLoading(false)
+            setSubmitting(false)
             if (res.data.message === 'Success') navigate('/submit', { replace: true })
             else alert('Error has occurred, please try again.')
         }).catch(e => {
-            setLoading(false)
+            setSubmitting(false)
             alert('Error has occurred, please try again.')
         })
     }
@@ -244,38 +230,44 @@ function Verify(props) {
         <Container className={classes.container}>
             <div className="logoBar"> <div className="verify_back_button"><Link className="clean-button" to='/home'><Button variant="outlined" color="primary"><ArrowBackIcon />Go Back</Button></Link></div><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
             <br />
-            {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the paper(s) you selected, we've found all other papers of yours listed in Microsoft Academic. For each paper, please select any testbeds you used to conduct the research. By default, <b>None</b> (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
-            <br />
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Year</TableCell>
-                        <TableCell></TableCell>
-                        <TableCell>GENI</TableCell>
-                        <TableCell>Cloudlab</TableCell>
-                        <TableCell>Chameleon</TableCell>
-                        <TableCell>None</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {currPaper.map((paper, index) => <TableRow key={paper.DN}>{
-                        paper.firstItemInYear || index === 0 ? <TableCell classes={{ root: classes.root }}><Typography className={classes.firstItemInYear}><b>{paper.Y}</b></Typography></TableCell> : <span></span>
-                    }
-                        <TableCell><div><Typography><b><i>{paper.DN}</i></b></Typography><Tooltip title={renderAuthorList(paper.AA)} placement="bottom-start" classes={{ tooltip: classes.noMaxWidth }}><Typography className={classes.authors}>{renderAuthorList(paper.AA)}</Typography></Tooltip><Typography>{paper.VFN}</Typography></div></TableCell>
-                        <TableCell><Checkbox checked={checkedList[paper.Id][0]} onChange={() => handleCheckBox(paper.Id, 0)}></Checkbox></TableCell>
-                        <TableCell><Checkbox checked={checkedList[paper.Id][1]} onChange={() => handleCheckBox(paper.Id, 1)}></Checkbox></TableCell>
-                        <TableCell><Checkbox checked={checkedList[paper.Id][2]} onChange={() => handleCheckBox(paper.Id, 2)}></Checkbox></TableCell>
-                        <TableCell><Checkbox checked={checkedList[paper.Id][3]} onChange={() => handleCheckBox(paper.Id, 3)}></Checkbox></TableCell>
-                    </TableRow>)}
-                </TableBody>
-            </Table>
-            <Dialog open={submitForm} onClose={() => setSubmitForm(false)}>
-                <DialogContent>Are you sure you want to submit your survey?</DialogContent>
-                <DialogActions>{isLoading ? <div className={classes.spinner}><CircularProgress size={30} /></div> : <div><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button><Button color="primary" onClick={handleDataSubmit}>Yes</Button></div>}</DialogActions>
-            </Dialog>
-            <div className={classes.buttonContainer}>
-                <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Save and Continue</Button></div>}
-            </div>
+            {isLoading && <CircularProgress />}
+            {currPaper !== undefined && currPaper.length === 0 && <Typography>Sorry, we can't find papers based on your selection.</Typography>}
+            {currPaper !== undefined && currPaper.length !== 0 &&
+                <Fragment>
+                    {currPage == 1 ? <Card className={classes.card}><CardContent>Based on the paper(s) you selected, we've found all other papers of yours listed in Microsoft Academic. For each paper, please select any testbeds you used to conduct the research. By default, <b>None</b> (meaning no testbed was used) is checked.</CardContent></Card> : <span />}
+                    <br />
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Year</TableCell>
+                                <TableCell></TableCell>
+                                <TableCell>GENI</TableCell>
+                                <TableCell>Cloudlab</TableCell>
+                                <TableCell>Chameleon</TableCell>
+                                <TableCell>None</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {currPaper.map((paper, index) => <TableRow key={paper.DN}>{
+                                paper.firstItemInYear || index === 0 ? <TableCell classes={{ root: classes.root }}><Typography className={classes.firstItemInYear}><b>{paper.Y}</b></Typography></TableCell> : <span></span>
+                            }
+                                <TableCell><div><Typography><b><i>{paper.DN}</i></b></Typography><Tooltip title={renderAuthorList(paper.AA)} placement="bottom-start" classes={{ tooltip: classes.noMaxWidth }}><Typography className={classes.authors}>{renderAuthorList(paper.AA)}</Typography></Tooltip><Typography>{paper.VFN}</Typography></div></TableCell>
+                                <TableCell><Checkbox checked={checkedList[paper.Id][0]} onChange={() => handleCheckBox(paper.Id, 0)}></Checkbox></TableCell>
+                                <TableCell><Checkbox checked={checkedList[paper.Id][1]} onChange={() => handleCheckBox(paper.Id, 1)}></Checkbox></TableCell>
+                                <TableCell><Checkbox checked={checkedList[paper.Id][2]} onChange={() => handleCheckBox(paper.Id, 2)}></Checkbox></TableCell>
+                                <TableCell><Checkbox checked={checkedList[paper.Id][3]} onChange={() => handleCheckBox(paper.Id, 3)}></Checkbox></TableCell>
+                            </TableRow>)}
+                        </TableBody>
+                    </Table>
+                    <Dialog open={submitForm} onClose={() => setSubmitForm(false)}>
+                        <DialogContent>Are you sure you want to submit your survey?</DialogContent>
+                        <DialogActions>{isSubmitting ? <div className={classes.spinner}><CircularProgress size={30} /></div> : <div><Button color="secondary" onClick={() => setSubmitForm(false)}>No</Button><Button color="primary" onClick={handleDataSubmit}>Yes</Button></div>}</DialogActions>
+                    </Dialog>
+                    <div className={classes.buttonContainer}>
+                        <Pagination count={currPageTotal} page={currPage} onChange={handlePageChange} />{currPage === currPageTotal ? <div className="verify_save_button"><Button variant="outlined" fullWidth="true" onClick={() => setSubmitForm(true)} color="secondary">Submit</Button></div> : <div className="verify_save_button"><Button color="primary" fullWidth="true" variant="outlined" onClick={() => setCurrPage(currPage + 1)}>Save and Continue</Button></div>}
+                    </div>
+                </Fragment>
+            }
         </Container>
     )
 }

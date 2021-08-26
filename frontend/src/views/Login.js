@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import '../App.css';
-import PubConnectLarge from '../PC-large.png'
-import { Button, Heading, TextField, Typography } from '@material-ui/core';
-import { Card, CardContent } from '@material-ui/core';
+import PubConnectLarge from '../img/PC-large.png'
+import { Button, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import AddIcon from '@material-ui/icons/Add';
 import ClearIcon from '@material-ui/icons/Clear'
 import { Prizes } from '../components/prizes';
-import PrizeLogo from '../prizes.png';
+import PrizeLogo from '../img/prizes.png';
 
 const useStyles = makeStyles((theme) => ({
     input: {
