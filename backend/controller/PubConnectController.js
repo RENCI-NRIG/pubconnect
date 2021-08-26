@@ -38,19 +38,21 @@ exports.PubConnectInsert = async function (req, res) {
             const [paperRows, paperFields] = await connection_pool.promise().query(_checkSQL);
             let this_paper_id;
             if (paperRows.length === 0) {
+                let citation_output = undefined;
                 try {
                     let paper_citation = Cite(props[this_id].DOI);
-                    let citation_output = paper_citation.format('bibliography', {
+                    citation_output = paper_citation.format('bibliography', {
                         type: 'string'
                     })
-                    const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi, venue, paper_citation) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}', '${props[this_id].VFN === undefined ? undefined : props[this_id].VFN.replace(/'/g, "\\'")}', '${citation_output === undefined ? undefined : citation_output.replace(/'/g, "\\'")}')`;
-                    const [newPaperRows, newPaperFields] = await connection_pool.promise().query(_paperSQL)
-                    console.log(`${props[this_id].Id} added to paper table`)
-                    this_paper_id = newPaperRows.insertId;
                 }
                 catch (e) {
-                    console.log(e)
+                    console.log(`Failed to generate citation for paper ${props[this_id].Id}`)
                 }
+                const _paperSQL = `INSERT IGNORE INTO paper(ms_paper_id, doi, venue, paper_citation) VALUES ('${props[this_id].Id}', '${props[this_id].DOI}', '${props[this_id].VFN === undefined ? undefined : props[this_id].VFN.replace(/'/g, "\\'")}', '${citation_output === undefined ? undefined : citation_output.replace(/'/g, "\\'")}')`;
+                const [newPaperRows, newPaperFields] = await connection_pool.promise().query(_paperSQL)
+                console.log(`${props[this_id].Id} added to paper table`)
+                this_paper_id = newPaperRows.insertId;
+
             } else this_paper_id = paperRows[0]['paper_id'];
             const _authorPaperSQL = `INSERT INTO author_papers VALUES ('${user_id}', '${this_paper_id}')`;
             await connection_pool.promise().query(_authorPaperSQL);

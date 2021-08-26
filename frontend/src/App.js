@@ -4,6 +4,7 @@ import Login from './views/Login';
 import Home from './views/Home';
 import Verify from './views/Verify';
 import Submit from './views/Submit';
+import { NotFound } from './views/NotFound';
 import './App.css';
 import { useBeforeunload } from 'react-beforeunload';
 
@@ -15,6 +16,7 @@ function App() {
       <Verify path="/verify" />
       <Home path="/home" />
       <Login path="/" />
+      <NotFound default />
     </Router>
 
   );

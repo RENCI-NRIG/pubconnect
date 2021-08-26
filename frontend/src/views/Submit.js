@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Button, Card, CardContent, Container, Checkbox, Table, TableBody, TableCell, TableHead, TableRow, Typography, Select, makeStyles } from '@material-ui/core';
+import React from 'react';
+import { Typography, makeStyles } from '@material-ui/core';
+import { NotFound } from './NotFound';
 import '../App.css';
 import { Prizes } from '../components/prizes';
-import EnterPrizeLogo from '../entered.png'
-import ThankYouLogo from '../thanks.png';
-import PubConnectLarge from '../PC-large.png'
+import EnterPrizeLogo from '../img/entered.png'
+import ThankYouLogo from '../img/thanks.png';
+import PubConnectLarge from '../img/PC-large.png'
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -41,6 +41,8 @@ function Submit(props) {
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
     const userName = JSON.parse(sessionStorage.getItem('login'));
     const nameMap = JSON.parse(sessionStorage.getItem('nameMap'), reviver);
+    
+    if(userIDs === null) return <NotFound />
 
     let renderNameID = {};
     userIDs.forEach(id => {
@@ -61,20 +63,6 @@ function Submit(props) {
                 <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
                 <br />
                 <img className="submit-thank-logo" src={ThankYouLogo} />
-                {/* <div>
-                    <br />
-                    <Typography>Here are the named entries we found for you in Microsoft Academic:</Typography>
-                    <div className={classes.indented}>
-                        <ul>
-                            {Object.keys(renderNameID).map(name => <li>{name} (
-                                {renderNameID[name].map((id, index) => <span>{index > 0 ? ', ' : ''}<a href={`http://academic.microsoft.com/author/${id}`} target="_blank">{index + 1}</a></span>)}
-
-                            )</li>)}
-                        </ul>
-                    </div>
-                    <br />
-                    <Typography>If you’d like to learn more about creating a profile page in Academic, here is a <a href="https://www.microsoft.com/en-us/research/project/academic/articles/keep-your-profile-and-yourself-up-to-date/#:~:text=You%20may%20search%20for%20your,and%20selecting%20%E2%80%9CManage%20Claims.%E2%80%9D" target="_blank">blog post</a> that shows you how.</Typography>
-                </div> */}
                 <img className="submit-entered-logo" src={EnterPrizeLogo} />
                 <div className={classes.indented}>
                     <Prizes />

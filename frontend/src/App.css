@@ -36,10 +36,6 @@
   margin: 10px 0;
 }
 
-.form-action-input {
-}
-
-
 .input{
   margin: 10px auto;
 }
@@ -86,6 +82,13 @@
   padding-right: 10px;
 }
 
+.home_info_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+}
+
 .home_text{
   margin: 0px 20px 20px 20px;
   display: flex;
@@ -99,6 +102,16 @@
   align-items: center;
   justify-content: center;
   width: 90%;
+}
+
+.not_found_container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  height: 50%;
+  width: 100%;
+  font-size: 1.2rem;
 }
 
 .submit_button{
