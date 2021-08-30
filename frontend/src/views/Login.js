@@ -65,7 +65,10 @@ function Login() {
                     </div>
                 </div >
                 <br />
-                <img className="prize-logo" src={PrizeLogo} />
+                <div className="prize-img-container">
+                    <img className="prize-logo" src={PrizeLogo} />
+                </div>
+                <Typography>At the end of the survey you will have an opportunity to enter yourself in a raffle to win these prizes:</Typography>
                 <Prizes />
             </div >
         </div>

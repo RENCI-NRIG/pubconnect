@@ -3,7 +3,7 @@ import { Typography, makeStyles } from '@material-ui/core';
 import { NotFound } from './NotFound';
 import '../App.css';
 import { Prizes } from '../components/prizes';
-import EnterPrizeLogo from '../img/entered.png'
+import PrizesLogo from '../img/prizes.png'
 import ThankYouLogo from '../img/thanks.png';
 import PubConnectLarge from '../img/PC-large.png'
 
@@ -19,11 +19,11 @@ const useStyles = makeStyles((theme) => ({
     btn: {
         marginTop: 20
     },
-    heading: {
-        textAlign: 'center'
+    prizeInfo: {
+        fontSize: '1.2rem'
     },
     indented: {
-        padding: '0 20px'
+        paddingLeft: '40px'
     }
 }))
 
@@ -41,8 +41,8 @@ function Submit(props) {
     const userIDs = JSON.parse(sessionStorage.getItem('home'));
     const userName = JSON.parse(sessionStorage.getItem('login'));
     const nameMap = JSON.parse(sessionStorage.getItem('nameMap'), reviver);
-    
-    if(userIDs === null) return <NotFound />
+
+    if (userIDs === null) return <NotFound />
 
     let renderNameID = {};
     userIDs.forEach(id => {
@@ -63,15 +63,14 @@ function Submit(props) {
                 <div className="logoBar"><a><img className="logo-small" src={PubConnectLarge}></img></a></div>
                 <br />
                 <img className="submit-thank-logo" src={ThankYouLogo} />
-                <img className="submit-entered-logo" src={EnterPrizeLogo} />
+                <img className="submit-entered-logo" src={PrizesLogo} />
+                <br />
+                <Typography className={classes.prizeInfo}>
+                    To enter yourself in a raffle, visit our <a href="https://gleam.io/" className="blue" target="_blank">Gleam.io</a> page.
+                </Typography>
                 <div className={classes.indented}>
                     <Prizes />
                 </div>
-                <br />
-                <Typography>
-                    You can gain additional raffle tickets by completing other tasks such as referring someone else to take the survey. Want to learn more? Then visit our <a href="https://gleam.io/" target="_blank">Gleam.io</a> page for other opportunities to win!
-                </Typography>
-                <br />
             </div>
         </div>
     )
