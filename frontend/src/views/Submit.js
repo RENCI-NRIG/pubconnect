@@ -66,7 +66,7 @@ function Submit(props) {
                 <img className="submit-entered-logo" src={PrizesLogo} />
                 <br />
                 <Typography className={classes.prizeInfo}>
-                    To enter yourself in a raffle, visit our <a href="https://gleam.io/" className="blue" target="_blank">Gleam.io</a> page.
+                    To enter yourself in a raffle, visit our <a href="https://gleam.io/cD1ZX/pubconnect-raffle" className="blue" target="_blank">Gleam.io</a> page.
                 </Typography>
                 <div className={classes.indented}>
                     <Prizes />
