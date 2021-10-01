@@ -4,6 +4,7 @@ import axios from 'axios';
 import ReplayIcon from '@material-ui/icons/Replay';
 import PubConnectLarge from '../img/PC-large.png';
 import { Link, navigate } from '@reach/router';
+import { replaceDiacritics } from '../helper/replaceDiacritics';
 import '../App.css';
 
 import { Button, Card, CardContent, Checkbox, CircularProgress, Typography, makeStyles } from '@material-ui/core';
@@ -52,12 +53,12 @@ function Home(props) {
         let tem_NameMap = new Map();
         if (userInfo !== undefined) {
             for await (let i of userInfo[0]) {
-                let lowerCaseName = i.toLowerCase();
+                let normalizedString = replaceDiacritics(i.toLowerCase());
                 axios({
                     method: 'GET',
                     url: 'https://api.labs.cognitive.microsoft.com/academic/v1.0/evaluate',
                     params: {
-                        expr: `Composite(AA.AuN=='${lowerCaseName}')`,
+                        expr: `Composite(AA.AuN=='${normalizedString}')`,
                         attributes: 'AA.AuId,AA.AuN,AA.DAuN',
                         'subscription-key': 'f6714001211242e982d92a3646ececed',
                         count: 100
@@ -71,7 +72,7 @@ function Home(props) {
                     else {
                         for (let article in res.data.entities) {
                             for (let author in res.data.entities[article].AA) {
-                                if (res.data.entities[article].AA[author].AuN == lowerCaseName) {
+                                if (res.data.entities[article].AA[author].AuN == normalizedString) {
                                     ids.add(res.data.entities[article].AA[author].AuId);
                                     tem_NameMap.set(res.data.entities[article].AA[author].AuId, res.data.entities[article].AA[author].DAuN)
                                 }
